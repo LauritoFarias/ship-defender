@@ -27,6 +27,8 @@ FONDO_PARTIDA = pygame.transform.scale(FONDO_PARTIDA, TAMANIO_PANTALLA)
 # Configuracion
 FPS = 60
 
+
+
 ##########     COLORES     ##########
 
 # Definicion de colores
@@ -48,33 +50,32 @@ COLOR_FLOTANTE_RELLENO_BOTONES = VERDE
 
 
 
+##########     ESTILOS     ##########
+
 # Fuentes
+TRANSPARENT_SCREEN = pygame.Surface(TAMANIO_PANTALLA)
+TRANSPARENT_SCREEN.fill(NEGRO)
+TRANSPARENT_SCREEN.set_alpha(192)
 
-transparent_screen = pygame.Surface(TAMANIO_PANTALLA)
-transparent_screen.fill(NEGRO)
-transparent_screen.set_alpha(192)
-
-fuente_textos_archivo = r"assets\MorrisRomanBlack.ttf"
-fuente_textos = pygame.font.Font(fuente_textos_archivo, 40)
+DIR_FUENTE_TEXTOS = r"assets\Fuentes\MorrisRomanBlack.ttf"
+FUENTE_TEXTOS = pygame.font.Font(DIR_FUENTE_TEXTOS, 40)
 COLOR_FUENTE_TEXTOS = NEGRO
 
 ANCHO_CONTORNO = 3
 
+# Titulo
+DIR_FUENTE_TITULO = r"assets\Fuentes\Pirate Ship.ttf"
+TAMANIO_FUENTE_TITULO = 100
+FUENTE_TITULO = pygame.font.Font(DIR_FUENTE_TITULO, TAMANIO_FUENTE_TITULO)
+COLOR_FUENTE_TITULO = BLANCO
+TEXTO_TITULO = "Ship Defender"
+RECT_TITULO_X = PANTALLA_CENTRO_X
+RECT_TITULO_Y = 120
 
-
-#Titulo
-dir_fuente_titulo = r"assets\Pirate Ship.ttf"
-tamanio_fuente_titulo = 100
-fuente_titulo = pygame.font.Font(dir_fuente_titulo, tamanio_fuente_titulo)
-color_fuente_titulo = BLANCO
-texto_titulo = "Ship Defender"
-color = COLOR_CONTORNOS
-rect_titulo_x = PANTALLA_CENTRO_X
-rect_titulo_y = 120
-
-ESTILO_INTERFAZ = {"oscurecer_pantalla": transparent_screen,
-                   "dir_fuente": fuente_textos_archivo,
-                   "fuente": fuente_textos,
+# Estilos
+ESTILO_INTERFAZ = {"oscurecer_pantalla": TRANSPARENT_SCREEN,
+                   "dir_fuente": DIR_FUENTE_TEXTOS,
+                   "fuente": FUENTE_TEXTOS,
                    "tamanio_fuente": 40,
                    "color_fuente": COLOR_FUENTE_TEXTOS,
                    "color_relleno_botones": COLOR_RELLENO_BOTONES,
@@ -83,53 +84,34 @@ ESTILO_INTERFAZ = {"oscurecer_pantalla": transparent_screen,
                    "color_contorno": COLOR_CONTORNOS,
                    "radio_borde": 5}
 
-ESTILO_TITULO = {"dir_fuente": dir_fuente_titulo,
-                 "fuente": fuente_titulo,
-                 "tamanio_fuente": tamanio_fuente_titulo,
-                 "color_fuente": color_fuente_titulo,
+ESTILO_TITULO = {"dir_fuente": DIR_FUENTE_TITULO,
+                 "fuente": FUENTE_TITULO,
+                 "tamanio_fuente": TAMANIO_FUENTE_TITULO,
+                 "color_fuente": COLOR_FUENTE_TITULO,
                  "ancho_contorno": ANCHO_CONTORNO,
                  "color_contorno": COLOR_CONTORNOS,
-                 "texto": texto_titulo,
-                 "rect_x": rect_titulo_x,
-                 "rect_y": rect_titulo_y}
+                 "texto": TEXTO_TITULO,
+                 "rect_x": RECT_TITULO_X,
+                 "rect_y": RECT_TITULO_Y}
 
 
 
+##########     MUSICA Y SONIDOS    ##########
 
-
-
-
-
-
-#Reloj
-clock = pygame.time.Clock()
-
-
-
-# Teclas
-PRIMARY_MOUSE_BUTTON = 1
-SECONDARY_MOUSE_BUTTON = 3
-SCROLL_MOUSE_BUTTON = 2
-SCROLL_UP_MOUSE = 4
-SCROLL_DOWN_MOUSE = 5
-
-
-
-# Musica y sonidos
 VOLUMEN_MUSICA = 0.5
-ARCHIVO_MUSICA_MENU = r"assets\menu.mp3"
-ARCHIVO_MUSICA_BATALLA = r"assets\battleship.mp3"
-ARCHIVO_MUSICA_FIN = r"assets\after-the-battle.mp3"
+ARCHIVO_MUSICA_MENU = r"assets\Sonidos\menu.mp3"
+ARCHIVO_MUSICA_BATALLA = r"assets\Sonidos\battleship.mp3"
+ARCHIVO_MUSICA_FIN = r"assets\Sonidos\after-the-battle.mp3"
 
 
 
 VOLUMEN_SONIDOS = 0.5
-SONIDO_SELECCION = pygame.mixer.Sound(r"assets\select.mp3")
-SONIDO_BALA = pygame.mixer.Sound(r"assets\bullet-shot.mp3")
-SONIDO_DISPARO_CANION = pygame.mixer.Sound(r"assets\cannon-shot.mp3")
-SONIDO_EXPLOSION_1 = pygame.mixer.Sound(r"assets\explosion-1.mp3")
-SONIDO_EXPLOSION_2 = pygame.mixer.Sound(r"assets\explosion-2.mp3")
-SONIDO_IMPACTO_MUNICION = pygame.mixer.Sound(r"assets\impacto-municion.mp3")
+SONIDO_SELECCION = pygame.mixer.Sound(r"assets\Sonidos\select.mp3")
+SONIDO_BALA = pygame.mixer.Sound(r"assets\Sonidos\bullet-shot.mp3")
+SONIDO_DISPARO_CANION = pygame.mixer.Sound(r"assets\Sonidos\cannon-shot.mp3")
+SONIDO_EXPLOSION_1 = pygame.mixer.Sound(r"assets\Sonidos\explosion-1.mp3")
+SONIDO_EXPLOSION_2 = pygame.mixer.Sound(r"assets\Sonidos\explosion-2.mp3")
+SONIDO_IMPACTO_MUNICION = pygame.mixer.Sound(r"assets\Sonidos\impacto-municion.mp3")
 SONIDOS = [SONIDO_SELECCION, SONIDO_BALA, SONIDO_DISPARO_CANION, SONIDO_EXPLOSION_1, SONIDO_EXPLOSION_2, SONIDO_IMPACTO_MUNICION]
 
 
@@ -203,7 +185,37 @@ BOTONES = {"comenzar": RECT_BOTON_COMENZAR,
            "volver_estadisticas": RECT_BOTON_VOLVER_ESTADISTICAS}
 
 
-#Flags
+
+###########     JUGADOR     ##########
+
+DIMENSIONES_JUGADOR = (40, 60)
+
+imagen_jugador = pygame.image.load(r"assets\Imagenes\bote.png").convert_alpha()
+
+imagen_jugador = pygame.transform.scale(imagen_jugador, DIMENSIONES_JUGADOR)
+
+rect_imagen_jugador = imagen_jugador.get_rect()
+
+rect_imagen_jugador.center = CENTRO_PANTALLA
+
+mask_jugador = pygame.mask.from_surface(imagen_jugador)
+
+velocidad_disparo_jugador = 4
+
+
+
+##########     TECLAS     ##########
+
+PRIMARY_MOUSE_BUTTON = 1
+SECONDARY_MOUSE_BUTTON = 3
+SCROLL_MOUSE_BUTTON = 2
+SCROLL_UP_MOUSE = 4
+SCROLL_DOWN_MOUSE = 5
+
+
+
+##########     FLAGS    ##########
+
 flags_pantallas = {"menu": True, "pause": False, "opciones": False, "estadisticas": False}
 in_menu = True
 in_pause = False
@@ -211,8 +223,3 @@ flag_fin = False
 en_opciones = False
 pantalla_estadisticas = False
 timers_cargados = False
-
-
-
-velocidad_disparo_jugador = 4
-velocidad_disparo_enemigos = 4

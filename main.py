@@ -16,6 +16,8 @@ pygame.init()
 
 pygame.font.init()
 
+clock = pygame.time.Clock()
+
 ##########     Configuracion pantalla principal     ##########
 
 # Pantalla
@@ -31,29 +33,15 @@ pygame.mixer.music.set_volume(VOLUMEN_MUSICA)
 
 pygame.mixer.music.play(-1)
 
+
 for sonido in SONIDOS:
     pygame.mixer.Sound.set_volume(sonido, VOLUMEN_SONIDOS)
 
-
-
-player_dimensions = (40, 60)
-image_player = pygame.image.load(r"assets\Imagenes\bote.png").convert_alpha()
-
-image_player = pygame.transform.scale(image_player, player_dimensions)
-
-image_player_rect = image_player.get_rect()
-
-image_player_rect.center = CENTRO_PANTALLA
-
-mask_player = pygame.mask.from_surface(image_player)
-
-player = {"mask": mask_player, "imagen": image_player, "rect": image_player_rect, "disparo": None, "velocidad": 2, "vidas": 3}
-
-
-
-enemigos = []
+player = {"mask": mask_jugador, "imagen": imagen_jugador, "rect": rect_imagen_jugador, "disparo": None, "velocidad": 2, "vidas": 3}
 
 disparos_jugador = []
+
+enemigos = []
 
 disparos_enemigos = []
 
@@ -70,29 +58,21 @@ move_left = False
 move_up = False
 move_down = False
 
-
-
 #fuente_vidas = pygame.font.Font(fuente_textos, 20)
 
 #texto_vidas = fuente_vidas.render(f"Vidas:", True, black)
 #rect_texto_vidas = texto_vidas.get_rect()
 #rect_texto_vidas.topleft = (10, 10)
 
-
-
 contador_enemigos_muertos = {"velero": 0, "barco": 0, "fragata": 0, "lancha": 0, "portaaviones": 0}
 
 puntuacion_por_tiempo = 0
 
-move_up = False
-move_down = False
-
 angulo_jugador = 0
 
 aumentar_angulo = False
-disminuir_angulo = False
 
-player_twinkle = False
+disminuir_angulo = False
 
 player_hit = False
 
@@ -140,8 +120,6 @@ while True:
         en_opciones = True
 
     ##########     Juego     ##########
-
-    player["vidas"] = 0
 
     if not siguiente_musica:
 
@@ -363,16 +341,16 @@ while True:
     ##########     Mover el bloque segun direccion     ##########
 
     # Manejar angulo
-    if aumentar_angulo:
+    if aumentar_angulo and player["rect"].top >= 0 and player["rect"].bottom <= ALTO:
         angulo_jugador = angulo_jugador - 1 % 360
-        player_rotado = pygame.transform.rotate(image_player, angulo_jugador)
+        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
         player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
         player["imagen"] = player_rotado
         player["rect"] = player_rotado_rect
         player["mask"] = pygame.mask.from_surface(player["imagen"])
     if disminuir_angulo:
         angulo_jugador = angulo_jugador + 1 % 360
-        player_rotado = pygame.transform.rotate(image_player, angulo_jugador)
+        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
         player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
         player["imagen"] = player_rotado
         player["rect"] = player_rotado_rect
