@@ -145,7 +145,7 @@ def crear_slider(surface, color_slider, rect_slider, color_handle, default_value
 
     
 def crear_ventana(superficie, estilo_interfaz, rect_ventana, centro_texto, texto):
-    pygame.draw.rect(superficie, estilo_interfaz["color_relleno_botones"], rect_ventana)
+    pygame.draw.rect(superficie, estilo_interfaz["color_relleno_botones"], rect_ventana, border_radius = estilo_interfaz["radio_borde"])
     dibujar_texto(superficie, estilo_interfaz["dir_fuente"], texto, estilo_interfaz["color_fuente"], estilo_interfaz["tamanio_fuente"], centro_texto[0], centro_texto[1])
 
 
@@ -173,9 +173,12 @@ def crear_boton_con_contorno(estilo_interfaz, surface, texto, rect_boton):
 
 
 
-def pausa(superficie, estilo_interfaz, rect_botones):
-    in_pause = True
-    while in_pause:
+def pausa(superficie, origen, estilo_interfaz, rect_botones, volumen_musica):
+    superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
+
+    pygame.mixer.music.set_volume(0.1)
+
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 salir()
@@ -186,27 +189,38 @@ def pausa(superficie, estilo_interfaz, rect_botones):
                     return
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
-                    if rect_botones["opciones"].collidepoint(pygame.mouse.get_pos()):
-                        invocar_ventana_opciones()
-                    if rect_botones["volver_menu"].collidepoint(pygame.mouse.get_pos()):
+                    if rect_botones["comenzar"].collidepoint(pygame.mouse.get_pos()):
+                        pygame.mixer.music.set_volume(volumen_musica)
                         return
         
-        
-        crear_boton_con_contorno(estilo_interfaz, superficie, "Opciones", rect_botones["opciones"])
-        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver al menu", rect_botones["volver_menu"])
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Continuar", rect_botones["comenzar"])
 
         pygame.display.flip()
 
 
 
-def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_texto, texto, rect_botones, diccionario_puntajes, archivo_musica, volumen_musica, flags_pantallas):
+def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_texto, texto, rect_botones, contador_enemigos_muertos, milisegundos, archivo_musica, volumen_musica, flags_pantallas):
+
     superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
+
     pygame.mixer.music.load(archivo_musica)
 
     pygame.mixer.music.set_volume(volumen_musica)
 
     pygame.mixer.music.play(-1)
-    while True:
+
+    diccionario_puntajes = contar_puntaje(contador_enemigos_muertos, milisegundos)
+
+    archivo_estadisticas = "estadisticas.txt"
+            
+    guardar_puntajes(diccionario_puntajes, archivo_estadisticas)
+
+    diccionario_estadisticas = cargar_estadisticas(archivo_estadisticas)
+
+    print(diccionario_estadisticas)
+    
+    while flags_pantallas["fin"]:
+
         for event in pygame.event.get():
             if event.type == QUIT:
                 salir()
@@ -221,9 +235,6 @@ def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_text
                         return flags_pantallas
                     if rect_botones["estadisticas"].collidepoint(event.pos):
                         flags_pantallas["estadisticas"] = True
-                        return flags_pantallas
-
-
         
         crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
 
@@ -239,27 +250,8 @@ def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_text
 
         crear_boton_con_contorno(estilo_interfaz, superficie, "Estadisticas", rect_botones["estadisticas"])
 
-        pygame.display.flip()
-
-
-
-def estadisticas(superficie, estilo_interfaz, rect_ventana, diccionario_puntajes, centro_texto, texto, rect_botones, flags_pantallas):
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                salir()
-            if event.type == KEYDOWN:
-                if event.type == K_ESCAPE:
-                    salir()
-            if event.type == MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    if rect_botones["volver_estadisticas"].collidepoint(event.pos):
-                        flags_pantallas["estadisticas"] = False
-                        return flags_pantallas
-    
-        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
-
-        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver", rect_botones["volver_estadisticas"])
+        if flags_pantallas["estadisticas"]:
+            flags_pantallas = estadisticas(superficie, estilo_interfaz, rect_ventana, diccionario_estadisticas, centro_texto, "Estadisticas", rect_botones, flags_pantallas)
 
         pygame.display.flip()
 
@@ -307,15 +299,57 @@ def contar_puntaje(contador_enemigos_muertos, milisegundos):
                                 "puntaje_portaaviones": puntaje_portaaviones,
                                 "puntaje_tiempo": puntaje_tiempo,
                                 "puntaje_total": puntaje_total}
-    
-    diccionario_estadisticas = {}
 
     return diccionario_puntajes
 
 
-def guardar_puntajes(diccionario_puntajes):
-    print(diccionario_puntajes["puntaje_total"])
-    estadisticas_txt = "estadisticas.txt"
 
-    with open(estadisticas_txt, "a") as archivo:
+def guardar_puntajes(diccionario_puntajes, archivo_estadisticas):
+
+    with open(archivo_estadisticas, "a") as archivo:
         archivo.write(str(diccionario_puntajes["puntaje_total"]) + "\n")
+
+
+
+def cargar_estadisticas(archivo_estadisticas):
+
+    puntajes = []
+        
+    with open(archivo_estadisticas, "r") as file:
+        for linea in file:
+            puntaje = int(linea.strip())
+            puntajes.append(puntaje)
+        
+    puntaje_maximo = None
+        
+    for puntaje in puntajes:
+        if puntaje_maximo == None or puntaje >= puntaje_maximo:
+            puntaje_maximo = puntaje
+    
+    diccionario_estadisticas = {"puntaje_maximo": puntaje_maximo}
+    
+    return diccionario_estadisticas
+
+
+
+def estadisticas(superficie, estilo_interfaz, rect_ventana, diccionario_estadisticas, centro_texto, texto, rect_botones, flags_pantallas):
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                salir()
+            if event.type == KEYDOWN:
+                if event.type == K_ESCAPE:
+                    salir()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if rect_botones["volver_estadisticas"].collidepoint(event.pos):
+                        flags_pantallas["estadisticas"] = False
+                        return flags_pantallas
+    
+        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
+
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje maximo: {diccionario_estadisticas['puntaje_maximo']}", estilo_interfaz["color_fuente"], estilo_interfaz["tamanio_fuente"], 400, 180)
+
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver", rect_botones["volver_estadisticas"])
+
+        pygame.display.flip()

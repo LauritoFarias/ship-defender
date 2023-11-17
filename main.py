@@ -58,11 +58,7 @@ move_left = False
 mover_proa = False
 mover_popa = False
 
-#fuente_vidas = pygame.font.Font(fuente_textos, 20)
-
-#texto_vidas = fuente_vidas.render(f"Vidas:", True, black)
-#rect_texto_vidas = texto_vidas.get_rect()
-#rect_texto_vidas.topleft = (10, 10)
+offset_vidas = 0
 
 contador_enemigos_muertos = {"velero": 0, "barco": 0, "fragata": 0, "lancha": 0, "portaaviones": 0}
 
@@ -144,7 +140,7 @@ while True:
             if event.key == K_ESCAPE:
                 salir()
             if event.key == K_p:
-                pausa(PANTALLA, ESTILO_INTERFAZ, BOTONES)
+                pausa(PANTALLA, ORIGEN, ESTILO_INTERFAZ, BOTONES, VOLUMEN_MUSICA)
             if event.key == K_UP:
                 mover_proa = True
             if event.key == K_RIGHT:
@@ -490,23 +486,18 @@ while True:
     for enemigo in enemigos:
         PANTALLA.blit(enemigo["imagen"], enemigo["rect"])
     
+    for vida in range(player["vidas"]):
+        PANTALLA.blit(IMAGEN_VIDAS, (PANTALLA_CENTRO_X - 65 + offset_vidas, 20))
+        offset_vidas += 50
+    offset_vidas = 0
+    
     ##########     FIN DEL JUEGO     ##########
 
     if player["vidas"] == 0:
         flags_pantallas["fin"] = True
     
     while flags_pantallas["fin"]:
-        if not flags_pantallas["puntajes_guardados"]:
-            diccionario_puntajes = contar_puntaje(contador_enemigos_muertos, milisegundos)
-
-            guardar_puntajes(diccionario_puntajes)
-
-            flags_pantallas["puntajes_guardados"] = True
-    
-        flags_pantallas = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, diccionario_puntajes, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags_pantallas)
-    
-        if flags_pantallas["estadisticas"]:
-            flags_pantallas = estadisticas(PANTALLA, ESTILO_INTERFAZ, RECT_VENTANA_FIN, diccionario_puntajes, CENTRO_RECT_TITULO_VENTANA_FIN, "Estadisticas", BOTONES, flags_pantallas)
+        flags_pantallas = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, contador_enemigos_muertos, milisegundos, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags_pantallas)
 
     pygame.display.flip()
 

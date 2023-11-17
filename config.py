@@ -17,12 +17,15 @@ PANTALLA_CENTRO_Y = ALTO // 2
 TAMANIO_PANTALLA = (ANCHO, ALTO)
 CENTRO_PANTALLA = (PANTALLA_CENTRO_X , PANTALLA_CENTRO_Y)
 
-# Imagenes de fondo
+# Imagenes
 FONDO_MENU = pygame.image.load(r"assets\Imagenes\undersea.png")
 FONDO_MENU = pygame.transform.scale(FONDO_MENU, TAMANIO_PANTALLA)
 
 FONDO_PARTIDA = pygame.image.load(r"assets\Imagenes\mar.png")
 FONDO_PARTIDA = pygame.transform.scale(FONDO_PARTIDA, TAMANIO_PANTALLA)
+
+IMAGEN_VIDAS = pygame.image.load(r"assets\Imagenes\pirate-flag.png")
+RECT_IMAGEN_VIDAS = IMAGEN_VIDAS.get_rect()
 
 # Configuracion
 FPS = 60
@@ -171,7 +174,7 @@ RECT_BOTON_SI = pygame.Rect(IZQUIERDA_BOTON_SI, 360, *TAMANIO_BOTONES_CONFIRMAR_
 RECT_BOTON_NO = pygame.Rect(IZQUIERDA_BOTON_NO, 360, *TAMANIO_BOTONES_CONFIRMAR_SALIDA)
 RECT_BOTON_VOLVER_MENU = pygame.Rect(ANCHO // 2 - 300, 480, *TAMANIO_BOTONES)
 RECT_BOTON_ESTADISTICAS = pygame.Rect(ANCHO // 2 + 50, 480, *TAMANIO_BOTONES)
-RECT_BOTON_VOLVER_ESTADISTICAS = pygame.Rect(ANCHO // 2, 480, *TAMANIO_BOTON_VOLVER_MENU)
+RECT_BOTON_VOLVER_ESTADISTICAS = pygame.Rect(ANCHO // 2 - 125, 480, *TAMANIO_BOTON_VOLVER_MENU)
 
 BOTONES = {"comenzar": RECT_BOTON_COMENZAR,
            "opciones": RECT_BOTON_OPCIONES,
@@ -216,7 +219,7 @@ SCROLL_DOWN_MOUSE = 5
 
 ##########     FLAGS    ##########
 
-flags_pantallas = {"menu": True, "pause": False, "opciones": False, "fin": False, "estadisticas": False, "archivar_puntajes": False, "puntajes_guardados": False}
+flags_pantallas = {"menu": True, "pause": False, "opciones": False, "fin": False, "estadisticas": False,"puntajes_guardados": False}
 in_menu = True
 in_pause = False
 flag_fin = False
