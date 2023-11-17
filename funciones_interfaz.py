@@ -199,7 +199,7 @@ def pausa(superficie, estilo_interfaz, rect_botones):
 
 
 
-def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_texto, texto, rect_botones, contador_enemigos_muertos, milisegundos, archivo_musica, volumen_musica, flags_pantallas):
+def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_texto, texto, rect_botones, diccionario_puntajes, archivo_musica, volumen_musica, flags_pantallas):
     superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
     pygame.mixer.music.load(archivo_musica)
 
@@ -220,54 +220,20 @@ def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_text
                         flags_pantallas["menu"] = True
                         return flags_pantallas
                     if rect_botones["estadisticas"].collidepoint(event.pos):
-                        estadisticas(superficie, estilo_interfaz, rect_botones, rect_ventana, "Estadisticas", centro_texto)
+                        flags_pantallas["estadisticas"] = True
+                        return flags_pantallas
 
 
-
-        puntaje_veleros = contador_enemigos_muertos["velero"] * 10
-
-        puntaje_barcos = contador_enemigos_muertos["barco"] * 20
-
-        puntaje_fragatas = contador_enemigos_muertos["fragata"] * 30
-
-        puntaje_lanchas = contador_enemigos_muertos["lancha"] * 50
-
-        puntaje_portaaviones = contador_enemigos_muertos["portaaviones"] * 50
-
-        puntaje_tiempo = 0
-
-        minutos_completos = milisegundos // 60000
-
-        puntos_por_segundo = 1
-
-
-
-        for minuto in range(minutos_completos):
-            puntaje_tiempo += minuto * puntos_por_segundo * 60
-            puntos_por_segundo *= 2
-        
-        milisegundos_restantes = milisegundos % 60000
-
-        segundos_restantes = milisegundos_restantes // 1000
-
-        for segundo in range(segundos_restantes):
-            puntaje_tiempo += segundo * puntos_por_segundo
-        
-        puntaje_total = puntaje_veleros + puntaje_barcos + puntaje_fragatas + puntaje_lanchas + puntaje_portaaviones + puntaje_tiempo
-
-        print(milisegundos)
         
         crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
 
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por veleros: {puntaje_veleros}", estilo_interfaz["color_fuente"], 24, 400, 180)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por barcos: {puntaje_barcos}", estilo_interfaz["color_fuente"], 24, 400, 220)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por fragatas: {puntaje_fragatas}", estilo_interfaz["color_fuente"], 24, 400, 260)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por lanchas: {puntaje_lanchas}", estilo_interfaz["color_fuente"], 24, 400, 300)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por portaaviones: {puntaje_portaaviones}", estilo_interfaz["color_fuente"], 24, 400, 340)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por tiempo: {puntaje_tiempo}", estilo_interfaz["color_fuente"], 24, 400, 380)
-        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje total: {puntaje_total}", estilo_interfaz["color_fuente"], 24, 400, 420)
-        
-
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por veleros: {diccionario_puntajes['puntaje_veleros']}", estilo_interfaz["color_fuente"], 24, 400, 180)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por barcos: {diccionario_puntajes['puntaje_barcos']}", estilo_interfaz["color_fuente"], 24, 400, 220)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por fragatas: {diccionario_puntajes['puntaje_fragatas']}", estilo_interfaz["color_fuente"], 24, 400, 260)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por lanchas: {diccionario_puntajes['puntaje_lanchas']}", estilo_interfaz["color_fuente"], 24, 400, 300)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por portaaviones: {diccionario_puntajes['puntaje_portaaviones']}", estilo_interfaz["color_fuente"], 24, 400, 340)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por tiempo: {diccionario_puntajes['puntaje_tiempo']}", estilo_interfaz["color_fuente"], 24, 400, 380)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje total: {diccionario_puntajes['puntaje_total']}", estilo_interfaz["color_fuente"], 24, 400, 420)
 
         crear_boton_con_contorno(estilo_interfaz, superficie, "Volver al menu", rect_botones["volver_menu"])
 
@@ -277,7 +243,7 @@ def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_text
 
 
 
-def estadisticas(superficie, estilo_interfaz, rect_botones, rect_ventana, texto, centro_texto):
+def estadisticas(superficie, estilo_interfaz, rect_ventana, diccionario_puntajes, centro_texto, texto, rect_botones, flags_pantallas):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -288,6 +254,68 @@ def estadisticas(superficie, estilo_interfaz, rect_botones, rect_ventana, texto,
             if event.type == MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if rect_botones["volver_estadisticas"].collidepoint(event.pos):
-                        return
+                        flags_pantallas["estadisticas"] = False
+                        return flags_pantallas
     
         crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
+
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver", rect_botones["volver_estadisticas"])
+
+        pygame.display.flip()
+
+
+
+def contar_puntaje(contador_enemigos_muertos, milisegundos):
+
+    puntaje_veleros = contador_enemigos_muertos["velero"] * 10
+
+    puntaje_barcos = contador_enemigos_muertos["barco"] * 20
+
+    puntaje_fragatas = contador_enemigos_muertos["fragata"] * 30
+
+    puntaje_lanchas = contador_enemigos_muertos["lancha"] * 50
+
+    puntaje_portaaviones = contador_enemigos_muertos["portaaviones"] * 50
+
+    puntaje_tiempo = 0
+
+    minutos_completos = milisegundos // 60000
+
+    puntos_por_segundo = 1
+
+
+
+    for minuto in range(minutos_completos):
+        puntaje_tiempo += minuto * puntos_por_segundo * 60
+        puntos_por_segundo *= 2
+        
+    milisegundos_restantes = milisegundos % 60000
+
+    segundos_restantes = milisegundos_restantes // 1000
+
+    for segundo in range(segundos_restantes):
+        puntaje_tiempo += segundo * puntos_por_segundo
+        
+    puntaje_total = puntaje_veleros + puntaje_barcos + puntaje_fragatas + puntaje_lanchas + puntaje_portaaviones + puntaje_tiempo
+
+
+
+    diccionario_puntajes = {"puntaje_veleros": puntaje_veleros,
+                                "puntaje_barcos": puntaje_barcos,
+                                "puntaje_fragatas": puntaje_fragatas,
+                                "puntaje_lanchas": puntaje_lanchas,
+                                "puntaje_portaaviones": puntaje_portaaviones,
+                                "puntaje_tiempo": puntaje_tiempo,
+                                "puntaje_total": puntaje_total}
+    
+    diccionario_estadisticas = {}
+
+    return diccionario_puntajes
+
+
+def guardar_puntajes(diccionario_puntajes):
+    print(diccionario_puntajes["puntaje_total"])
+    estadisticas_txt = "estadisticas.txt"
+
+    with open(estadisticas_txt, "a") as archivo:
+        archivo.write(str(diccionario_puntajes["puntaje_total"]) + "\n")

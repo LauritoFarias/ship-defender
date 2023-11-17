@@ -190,7 +190,7 @@ BOTONES = {"comenzar": RECT_BOTON_COMENZAR,
 
 DIMENSIONES_JUGADOR = (40, 60)
 
-imagen_jugador = pygame.image.load(r"assets\Imagenes\bote.png").convert_alpha()
+imagen_jugador = pygame.image.load(r"assets\Imagenes\bote.png")
 
 imagen_jugador = pygame.transform.scale(imagen_jugador, DIMENSIONES_JUGADOR)
 
@@ -216,7 +216,7 @@ SCROLL_DOWN_MOUSE = 5
 
 ##########     FLAGS    ##########
 
-flags_pantallas = {"menu": True, "pause": False, "opciones": False, "estadisticas": False}
+flags_pantallas = {"menu": True, "pause": False, "opciones": False, "fin": False, "estadisticas": False, "archivar_puntajes": False, "puntajes_guardados": False}
 in_menu = True
 in_pause = False
 flag_fin = False

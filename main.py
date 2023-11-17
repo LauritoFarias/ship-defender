@@ -55,8 +55,8 @@ milisegundos_ultimo_disparo_jugador = 0
 
 move_right = False
 move_left = False
-move_up = False
-move_down = False
+mover_proa = False
+mover_popa = False
 
 #fuente_vidas = pygame.font.Font(fuente_textos, 20)
 
@@ -73,6 +73,10 @@ angulo_jugador = 0
 aumentar_angulo = False
 
 disminuir_angulo = False
+
+moviendo_hacia_arriba = False
+
+moviendo_hacia_abajo = False
 
 player_hit = False
 
@@ -130,7 +134,8 @@ while True:
         pygame.mixer.music.play(-1)
 
         siguiente_musica = True
-
+    
+    #player["vidas"] = 0
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -141,13 +146,13 @@ while True:
             if event.key == K_p:
                 pausa(PANTALLA, ESTILO_INTERFAZ, BOTONES)
             if event.key == K_UP:
-                move_up = True
+                mover_proa = True
             if event.key == K_RIGHT:
-                aumentar_angulo = True
-            if event.key == K_DOWN:
-                move_down = True
-            if event.key == K_LEFT:
                 disminuir_angulo = True
+            if event.key == K_DOWN:
+                mover_popa = True
+            if event.key == K_LEFT:
+                aumentar_angulo = True
             if event.key == K_w:
                 if not cooldown_disparo_jugador:
                     disparo_jugador = disparar(cannonball, player["rect"].center, angulo_jugador, "forward", velocidad_disparo_jugador)
@@ -175,13 +180,13 @@ while True:
         
         if event.type == KEYUP:
             if event.key == K_UP:
-                move_up = False
+                mover_proa = False
             if event.key == K_RIGHT:
-                aumentar_angulo = False
-            if event.key == K_DOWN:
-                move_down = False
-            if event.key == K_LEFT:
                 disminuir_angulo = False
+            if event.key == K_DOWN:
+                mover_popa = False
+            if event.key == K_LEFT:
+                aumentar_angulo = False
             
             
         
@@ -341,30 +346,97 @@ while True:
     ##########     Mover el bloque segun direccion     ##########
 
     # Manejar angulo
-    if aumentar_angulo and player["rect"].top >= 0 and player["rect"].bottom <= ALTO:
-        angulo_jugador = angulo_jugador - 1 % 360
-        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
-        player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
-        player["imagen"] = player_rotado
-        player["rect"] = player_rotado_rect
-        player["mask"] = pygame.mask.from_surface(player["imagen"])
-    if disminuir_angulo:
-        angulo_jugador = angulo_jugador + 1 % 360
-        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
-        player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
-        player["imagen"] = player_rotado
-        player["rect"] = player_rotado_rect
-        player["mask"] = pygame.mask.from_surface(player["imagen"])
-
-
     
+    if disminuir_angulo:
+        angulo_jugador = abs((angulo_jugador - 1) % 360)
+        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
+        player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
+        player["imagen"] = player_rotado
+        player["rect"] = player_rotado_rect
+        player["mask"] = pygame.mask.from_surface(player["imagen"])
+    if aumentar_angulo:
+        angulo_jugador = (angulo_jugador + 1) % 360
+        player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
+        player_rotado_rect = player_rotado.get_rect(center = player["rect"].center)
+        player["imagen"] = player_rotado
+        player["rect"] = player_rotado_rect
+        player["mask"] = pygame.mask.from_surface(player["imagen"])
+    
+    
+
+    if mover_proa:
+        if angulo_jugador <= 90 or angulo_jugador >= 270:
+            moviendo_hacia_arriba = True
+            moviendo_hacia_abajo = False
+        if angulo_jugador > 90 and angulo_jugador < 270:
+            moviendo_hacia_arriba = False
+            moviendo_hacia_abajo = True
+        if angulo_jugador >= 0 and angulo_jugador <= 180:
+            moviendo_hacia_izquierda = True
+            moviendo_hacia_derecha = False
+        if angulo_jugador > 180 and angulo_jugador < 360:
+            moviendo_hacia_izquierda = False
+            moviendo_hacia_derecha = True
+    if mover_popa:
+        if angulo_jugador <= 90 or angulo_jugador >= 270:
+            moviendo_hacia_arriba = False
+            moviendo_hacia_abajo = True
+        if angulo_jugador > 90 and angulo_jugador < 270:
+            moviendo_hacia_arriba = True
+            moviendo_hacia_abajo = False
+        if angulo_jugador >= 0 and angulo_jugador <= 180:
+            moviendo_hacia_izquierda = False
+            moviendo_hacia_derecha = True
+        if angulo_jugador > 180 and angulo_jugador < 360:
+            moviendo_hacia_izquierda = True
+            moviendo_hacia_derecha = False
+    if not mover_proa and not mover_popa:
+        moviendo_hacia_arriba = False
+        moviendo_hacia_abajo = False
+        moviendo_hacia_izquierda = False
+        moviendo_hacia_derecha = False
+    
+    
+
     # Manejar movimiento del jugador
-    if move_up and player["rect"].top >= 0:
-        player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-        player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-    if move_down and player["rect"].bottom <= ALTO:
-        player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-        player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    #if mover_proa and player["rect"].top >= 0 and player["rect"].bottom <= ALTO:
+        #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+        #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    #if mover_popa and player["rect"].bottom <= ALTO and player["rect"].top >= 0:
+        #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+        #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    
+    if moviendo_hacia_arriba and player["rect"].top >= 0:
+        if (moviendo_hacia_izquierda and player["rect"].left >= 0) or (moviendo_hacia_derecha and player["rect"].right <= ANCHO):
+            if mover_proa:
+                player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+                player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+            if mover_popa:
+                player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+                player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    if moviendo_hacia_abajo and player["rect"].bottom <= ALTO:
+        if (moviendo_hacia_izquierda and player["rect"].left >= 0) or (moviendo_hacia_derecha and player["rect"].right <= ANCHO):
+            if mover_proa:
+                player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+                player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+            if mover_popa:
+                player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+                player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    #if moviendo_hacia_izquierda and player["rect"].left >= 0:
+        #if mover_proa:
+            #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+            #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+        #if mover_popa:
+            #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+            #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+    #if moviendo_hacia_derecha and player["rect"].right <= ANCHO:
+        #if mover_proa:
+            #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+            #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+        #if mover_popa:
+            #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
+            #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
+
     
 
 
@@ -421,12 +493,20 @@ while True:
     ##########     FIN DEL JUEGO     ##########
 
     if player["vidas"] == 0:
-        flag_fin = True
+        flags_pantallas["fin"] = True
     
-    if flag_fin:
-        flags_pantallas = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, contador_enemigos_muertos, milisegundos, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags_pantallas)
-        player["vidas"] = 3
-        flag_fin = False
+    while flags_pantallas["fin"]:
+        if not flags_pantallas["puntajes_guardados"]:
+            diccionario_puntajes = contar_puntaje(contador_enemigos_muertos, milisegundos)
+
+            guardar_puntajes(diccionario_puntajes)
+
+            flags_pantallas["puntajes_guardados"] = True
+    
+        flags_pantallas = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, diccionario_puntajes, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags_pantallas)
+    
+        if flags_pantallas["estadisticas"]:
+            flags_pantallas = estadisticas(PANTALLA, ESTILO_INTERFAZ, RECT_VENTANA_FIN, diccionario_puntajes, CENTRO_RECT_TITULO_VENTANA_FIN, "Estadisticas", BOTONES, flags_pantallas)
 
     pygame.display.flip()
 
