@@ -2,9 +2,21 @@ import pygame
 from math import cos, sin, radians
 
 def disparar(imagen_disparo, centro, angulo_jugador, direccion, velocidad):
+    """Invoca un disparo del jugador en dirección hacia adelante, derecha o izquierda.
+
+    Args:
+        imagen_disparo (Surface): imagen del disparo
+        centro (tuple): centro del rectángulo jugador
+        angulo_jugador (int): ángulo del jugador
+        direccion (str): dirección relativa del disparo del jugador
+        velocidad (int): velocidad del disparo
+
+    Returns:
+        dict: diccionario con las propiedades del disparo
+    """
 
     angulo_jugador_radianes = radians(angulo_jugador - 90)
-    
+
     offset_y = 20 * sin(angulo_jugador_radianes)
     
     if direccion == "forward":
@@ -24,6 +36,15 @@ def disparar(imagen_disparo, centro, angulo_jugador, direccion, velocidad):
 
 
 def mover_segun_angulo(angulo, velocidad):
+    """Determina el vector de movimiento x, y del jugador según su ángulo.
+
+    Args:
+        angulo (int): ángulo del jugador
+        velocidad (int): velocidad del jugador
+
+    Returns:
+        tuple: vector de movimiento
+    """
     angulo_radianes = radians(angulo - 90)
     move_x = velocidad * cos(angulo_radianes)
     move_y = velocidad * sin(angulo_radianes)

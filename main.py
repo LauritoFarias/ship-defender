@@ -36,6 +36,9 @@ pygame.mixer.music.play(-1)
 for sonido in SONIDOS:
     pygame.mixer.Sound.set_volume(sonido, VOLUMEN_SONIDOS)
 
+
+
+# Inicializar variables
 player = {"mask": mask_jugador, "imagen": imagen_jugador, "rect": rect_imagen_jugador, "disparo": None, "velocidad": 2, "vidas": 3}
 
 disparos_jugador = []
@@ -184,6 +187,7 @@ while True:
             
             
         
+        # Manejo de eventos de invocación de enemigos
         if event.type == EVENTO_INVOCAR_VELERO:
             if flag_primer_velero == False:
                 velero = invocar_enemigo("velero", 200)
@@ -232,8 +236,9 @@ while True:
 
 
 
-    ##########     Actualizar elementos     ##########
+    ##########     ACTUALIZAR ELEMENTOS     ##########
 
+    # Actualizar elementos de los enemigos y del jugador (movimiento, disparos y colisiones cuerpo a cuerpo y con disparos)
     for enemigo in enemigos:
         disparar_al_jugador(player, enemigo, milisegundos, disparos_enemigos, SONIDO_BALA, SONIDO_DISPARO_CANION)
         
@@ -253,6 +258,7 @@ while True:
     
     
 
+    # Invocación de disparos del jugador
     for disparo_jugador in disparos_jugador:
         
         if disparo_jugador:
@@ -305,15 +311,15 @@ while True:
 
 
     
+    # Tiempo de espera para que el jugador dispare
     if milisegundos - milisegundos_ultimo_disparo_jugador >= 1500:
         cooldown_disparo_jugador = False
     
 
     
-    ##########     Mover el bloque segun direccion     ##########
+    ##########     MANEJAR MOVIMIENTOS Y DISPAROS    ##########
 
-    # Manejar angulo
-    
+    # Manejar ángulo del jugador
     if disminuir_angulo:
         angulo_jugador = abs((angulo_jugador - 1) % 360)
         player_rotado = pygame.transform.rotate(imagen_jugador, angulo_jugador)
@@ -331,6 +337,7 @@ while True:
     
     
 
+    # Determinar la dirección de movimiento del jugador
     if mover_proa:
         if angulo_jugador <= 90 or angulo_jugador >= 270:
             moviendo_hacia_arriba = True
@@ -365,6 +372,7 @@ while True:
     
     
     
+    # Mover jugador según dirección dentro de los límites de la pantalla
     if moviendo_hacia_arriba and player["rect"].top >= 0:
         if (moviendo_hacia_izquierda and player["rect"].left >= 0) or (moviendo_hacia_derecha and player["rect"].right <= ANCHO):
             if mover_proa:
