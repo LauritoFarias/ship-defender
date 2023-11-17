@@ -15,7 +15,7 @@ def invocar_velero():
     imagen_velero_rect = imagen_velero.get_rect()
     mask_velero = pygame.mask.from_surface(imagen_velero)
 
-    diccionario_velero = {"tipo": "velero", "mask": mask_velero, "imagen": imagen_velero, "rect": imagen_velero_rect, "disparo": diccionario_bala, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 2, "vidas": 1, "arrollable": True, "hit": False}
+    diccionario_velero = {"tipo": "velero", "mask": mask_velero, "imagen": imagen_velero, "rect": imagen_velero_rect, "disparo": diccionario_bala, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 4, "vidas": 1, "arrollable": True, "hit": False}
 
     return diccionario_velero
 
@@ -32,7 +32,7 @@ def invocar_barco():
     imagen_barco_rect = imagen_barco.get_rect()
     mask_barco = pygame.mask.from_surface(imagen_barco)
 
-    diccionario_barco = {"tipo": "barco", "mask": mask_barco, "imagen": imagen_barco, "rect": imagen_barco_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(),  "velocidad_movimiento": 2, "velocidad_disparo": 3, "vidas": 1, "arrollable": False, "hit": False}
+    diccionario_barco = {"tipo": "barco", "mask": mask_barco, "imagen": imagen_barco, "rect": imagen_barco_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(),  "velocidad_movimiento": 2, "velocidad_disparo": 6, "vidas": 1, "arrollable": False, "hit": False}
 
     return diccionario_barco
 
@@ -49,7 +49,7 @@ def invocar_fragata():
     imagen_fragata_rect = imagen_fragata.get_rect()
     mask_fragata = pygame.mask.from_surface(imagen_fragata)
 
-    diccionario_fragata = {"tipo": "fragata", "mask": mask_fragata, "imagen": imagen_fragata, "rect": imagen_fragata_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 2, "velocidad_disparo": 5, "vidas": 2, "arrollable": False, "hit": False}
+    diccionario_fragata = {"tipo": "fragata", "mask": mask_fragata, "imagen": imagen_fragata, "rect": imagen_fragata_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 2, "velocidad_disparo": 8, "vidas": 2, "arrollable": False, "hit": False}
 
     return diccionario_fragata
 
@@ -66,7 +66,7 @@ def invocar_lancha():
     imagen_lancha_rect = imagen_lancha.get_rect()
     mask_lancha = pygame.mask.from_surface(imagen_lancha)
 
-    diccionario_lancha = {"tipo": "lancha", "mask": mask_lancha, "imagen": imagen_lancha, "rect": imagen_lancha_rect, "disparo": diccionario_bala,  "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 3, "velocidad_disparo": 10, "vidas": 1, "arrollable": False, "hit": False}
+    diccionario_lancha = {"tipo": "lancha", "mask": mask_lancha, "imagen": imagen_lancha, "rect": imagen_lancha_rect, "disparo": diccionario_bala,  "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 3, "velocidad_disparo": 20, "vidas": 1, "arrollable": False, "hit": False}
 
     return diccionario_lancha
 
@@ -83,7 +83,7 @@ def invocar_portaaviones():
     imagen_portaaviones_rect = imagen_portaaviones.get_rect()
     mask_portaaviones = pygame.mask.from_surface(imagen_portaaviones)
 
-    diccionario_portaaviones = {"tipo": "portaaviones", "mask": mask_portaaviones, "imagen": imagen_portaaviones, "rect": imagen_portaaviones_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 5, "vidas": 3, "arrollable": False, "hit": False}
+    diccionario_portaaviones = {"tipo": "portaaviones", "mask": mask_portaaviones, "imagen": imagen_portaaviones, "rect": imagen_portaaviones_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 10, "vidas": 3, "arrollable": False, "hit": False}
 
     return diccionario_portaaviones
 
@@ -194,7 +194,7 @@ def disparo_portaaviones(player, enemigo, milisegundos):
     
 
 
-def disparar_al_jugador(enemigo_disparo, imagen_disparo, posicion, direccion, velocidad_disparo):
+def crear_disparo_al_jugador(enemigo_disparo:dict, imagen_disparo, posicion, direccion:int, velocidad_disparo:int):
     if enemigo_disparo == "bala":
         tipo = "bala"
         if direccion == 6:
@@ -217,3 +217,44 @@ def disparar_al_jugador(enemigo_disparo, imagen_disparo, posicion, direccion, ve
     mask_disparo = pygame.mask.from_surface(imagen_disparo)
     diccionario_disparo = {"tipo": tipo, "imagen": imagen_disparo, "mask": mask_disparo, "rect": rect_disparo, "direccion": direccion, "velocidad_disparo": velocidad_disparo}
     return diccionario_disparo
+
+
+
+def disparar_al_jugador(player, enemigo, milisegundos, disparos_enemigos, sonido_bala, sonido_cannon_shot):
+    tipo_enemigo = enemigo["tipo"]
+    temporizador = 0
+
+    if tipo_enemigo == "velero":
+        temporizador = 3000
+    elif tipo_enemigo == "lancha":
+        temporizador = 1000
+    else:
+        temporizador = 2000
+
+    if (milisegundos - enemigo["milisegundos"]) >= temporizador:
+        if player["rect"].centerx >= enemigo["rect"].centerx:
+            posicion_salida_disparo = enemigo["rect"].midright
+            direccion = 6
+        elif player["rect"].centerx <= enemigo["rect"].centerx:
+            posicion_salida_disparo = enemigo["rect"].midleft
+            direccion = 4
+        else:
+            posicion_salida_disparo = enemigo["rect"].midbottom
+            direccion = 2
+
+        if tipo_enemigo == "barco" or tipo_enemigo == "fragata":
+            tipo_disparo = "cannonball"
+        else:
+            tipo_disparo = "bala"
+
+        disparo_enemigo = crear_disparo_al_jugador(tipo_disparo, enemigo["disparo"]["imagen"], posicion_salida_disparo, direccion, enemigo["velocidad_disparo"])
+
+        disparos_enemigos.append(disparo_enemigo)
+
+        if tipo_disparo == "bala":
+            sonido_bala.play()
+        else:
+            sonido_cannon_shot.play()
+
+        enemigo["milisegundos"] = milisegundos
+    

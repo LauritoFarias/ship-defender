@@ -1,72 +1,104 @@
 import pygame
 
-
-
 pygame.init()
 
 pygame.font.init()
 
-SPEED = 8
-
-#screen
-width = 800
-height = 600
-origin = (0, 0)
-center_screen_x = width // 2
-center_screen_y = height // 2
-size_screen = (width, height)
-center_screen = (center_screen_x, center_screen_y)
 
 
+##########     PANTALLA     ##########
 
-screen = pygame.display.set_mode((size_screen))
+# Coordenadas
+ANCHO = 800
+ALTO = 600
+ORIGEN = (0, 0)
+PANTALLA_CENTRO_X  = ANCHO // 2
+PANTALLA_CENTRO_Y = ALTO // 2
+TAMANIO_PANTALLA = (ANCHO, ALTO)
+CENTRO_PANTALLA = (PANTALLA_CENTRO_X , PANTALLA_CENTRO_Y)
 
+# Imagenes de fondo
+FONDO_MENU = pygame.image.load(r"assets\Imagenes\undersea.png")
+FONDO_MENU = pygame.transform.scale(FONDO_MENU, TAMANIO_PANTALLA)
 
+FONDO_PARTIDA = pygame.image.load(r"assets\Imagenes\mar.png")
+FONDO_PARTIDA = pygame.transform.scale(FONDO_PARTIDA, TAMANIO_PANTALLA)
 
-background_menu = pygame.image.load(r"assets\Imagenes\undersea.png")
-background_menu = pygame.transform.scale(background_menu, size_screen)
-
-background_game = pygame.image.load(r"assets\Imagenes\mar.png")
-background_game = pygame.transform.scale(background_game, size_screen)
-
-
-
+# Configuracion
 FPS = 60
 
-#colors
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
-yellow = (255, 255, 0)
-magenta = (255, 0, 255)
-cyan = (0, 255, 255)
-turqoise = (64, 192, 192)
-black = (0, 0, 0)
-white = (255, 255, 255)
+##########     COLORES     ##########
 
-title_fill_color = (150, 200, 250)
-title_outline_color = (80, 40, 20)
-button_fill_color = (255, 205, 10)
+# Definicion de colores
+ROJO = (255, 0, 0)
+VERDE = (0, 255, 0)
+AZUL = (0, 0, 255)
+AMARILLO = (255, 255, 0)
+MAGENTA = (255, 0, 255)
+CIAN = (0, 255, 255)
+TURQUESA = (64, 192, 192)
+NEGRO = (0, 0, 0)
+BLANCO = (255, 255, 255)
 
-colors = [red, green, blue, yellow, black, white]
+# Designacion de colores a objetos del juego
+COLOR_RELLENO_TITULO = (150, 200, 250)
+COLOR_CONTORNOS = (80, 40, 20)
+COLOR_RELLENO_BOTONES = (255, 205, 10)
+COLOR_FLOTANTE_RELLENO_BOTONES = VERDE
 
 
 
-#Fuentes
+# Fuentes
+
+transparent_screen = pygame.Surface(TAMANIO_PANTALLA)
+transparent_screen.fill(NEGRO)
+transparent_screen.set_alpha(192)
+
+fuente_textos_archivo = r"assets\MorrisRomanBlack.ttf"
+fuente_textos = pygame.font.Font(fuente_textos_archivo, 40)
+COLOR_FUENTE_TEXTOS = NEGRO
+
+ANCHO_CONTORNO = 3
+
+
+
 #Titulo
-archivo_fuente = r"assets\Pirate Ship.ttf"
-titulo = "Ship Defender"
-color = title_outline_color
-size_titulo = 100
-rect_titulo_x = center_screen_x
+dir_fuente_titulo = r"assets\Pirate Ship.ttf"
+tamanio_fuente_titulo = 100
+fuente_titulo = pygame.font.Font(dir_fuente_titulo, tamanio_fuente_titulo)
+color_fuente_titulo = BLANCO
+texto_titulo = "Ship Defender"
+color = COLOR_CONTORNOS
+rect_titulo_x = PANTALLA_CENTRO_X
 rect_titulo_y = 120
-ancho_contorno = 3
 
-fuente_textos = r"assets\MorrisRomanBlack.ttf"
-fuente_botones = pygame.font.Font(fuente_textos, 40)
-color_fuente_botones = black
+ESTILO_INTERFAZ = {"oscurecer_pantalla": transparent_screen,
+                   "dir_fuente": fuente_textos_archivo,
+                   "fuente": fuente_textos,
+                   "tamanio_fuente": 40,
+                   "color_fuente": COLOR_FUENTE_TEXTOS,
+                   "color_relleno_botones": COLOR_RELLENO_BOTONES,
+                   "color_relleno_hover_botones": COLOR_FLOTANTE_RELLENO_BOTONES,
+                   "ancho_contorno": ANCHO_CONTORNO,
+                   "color_contorno": COLOR_CONTORNOS,
+                   "radio_borde": 5}
 
-rect_text_ventana_center = (400, 140)
+ESTILO_TITULO = {"dir_fuente": dir_fuente_titulo,
+                 "fuente": fuente_titulo,
+                 "tamanio_fuente": tamanio_fuente_titulo,
+                 "color_fuente": color_fuente_titulo,
+                 "ancho_contorno": ANCHO_CONTORNO,
+                 "color_contorno": COLOR_CONTORNOS,
+                 "texto": texto_titulo,
+                 "rect_x": rect_titulo_x,
+                 "rect_y": rect_titulo_y}
+
+
+
+
+
+
+
 
 
 #Reloj
@@ -83,96 +115,101 @@ SCROLL_DOWN_MOUSE = 5
 
 
 
-# Sonidos
-select_sound = pygame.mixer.Sound(r"assets\select.mp3")
+# Musica y sonidos
+VOLUMEN_MUSICA = 0.5
+ARCHIVO_MUSICA_MENU = r"assets\menu.mp3"
+ARCHIVO_MUSICA_BATALLA = r"assets\battleship.mp3"
+ARCHIVO_MUSICA_FIN = r"assets\after-the-battle.mp3"
 
 
 
-#Botones
-size_button = (250, 60)
-left_button = screen.get_width() // 2 - size_button[0] // 2
-
-rect_comenzar = pygame.Rect(left_button, 240, *size_button)
-rect_opciones = pygame.Rect(left_button, 320, *size_button)
-rect_salir = pygame.Rect(left_button, 400, *size_button)
-
-
-
-rect_volver_menu = pygame.Rect(left_button, 410, *size_button)
+VOLUMEN_SONIDOS = 0.5
+SONIDO_SELECCION = pygame.mixer.Sound(r"assets\select.mp3")
+SONIDO_BALA = pygame.mixer.Sound(r"assets\bullet-shot.mp3")
+SONIDO_DISPARO_CANION = pygame.mixer.Sound(r"assets\cannon-shot.mp3")
+SONIDO_EXPLOSION_1 = pygame.mixer.Sound(r"assets\explosion-1.mp3")
+SONIDO_EXPLOSION_2 = pygame.mixer.Sound(r"assets\explosion-2.mp3")
+SONIDO_IMPACTO_MUNICION = pygame.mixer.Sound(r"assets\impacto-municion.mp3")
+SONIDOS = [SONIDO_SELECCION, SONIDO_BALA, SONIDO_DISPARO_CANION, SONIDO_EXPLOSION_1, SONIDO_EXPLOSION_2, SONIDO_IMPACTO_MUNICION]
 
 
 
-#Salir
-size_ventana_confirmar_salida = (600, 400)
-left_ventana_confirmar_salida = screen.get_width() // 2 - size_ventana_confirmar_salida[0] // 2
+##########      BOTONES     ##########
 
-size_botones_confirmar_salida = (80, 50)
-left_boton_si_confirmar_salida = screen.get_width() // 2 - (size_ventana_confirmar_salida[0] // 4 + size_botones_confirmar_salida[0] // 2)
-left_boton_no_confirmar_salida = screen.get_width() // 2 + (size_ventana_confirmar_salida[0] // 4 - size_botones_confirmar_salida[0] // 2)
-texto_ventana_confirmar_salida = "¿Estás seguro de que deseas salir?"
-
-rect_confirmar_salida = pygame.Rect(left_ventana_confirmar_salida, 100, *size_ventana_confirmar_salida)
-rect_si = pygame.Rect(left_boton_si_confirmar_salida, 360, *size_botones_confirmar_salida)
-rect_no = pygame.Rect(left_boton_no_confirmar_salida, 360, *size_botones_confirmar_salida)
-
-lista_botones = [rect_comenzar, rect_opciones, rect_salir]
-
-
+# Menu de inicio
+TAMANIO_BOTONES = (250, 60)
+IZQUIERDA_BOTONES = ANCHO // 2 - TAMANIO_BOTONES[0] // 2
+CENTRO_TEXTO_VENTANA = (ANCHO // 2, 200)
 
 # Opciones
-size_ventana_opciones = (600, 400)
-left_ventana_opciones = screen.get_width() // 2 - size_ventana_opciones[0] // 2
+TAMANIO_VENTANA_OPCIONES = (600, 520)
+IZQUIERDA_VENTANA_OPCIONES = ANCHO // 2 - TAMANIO_VENTANA_OPCIONES[0] // 2
+RECT_VENTANA_OPCIONES = pygame.Rect(IZQUIERDA_VENTANA_OPCIONES, 40, *TAMANIO_VENTANA_OPCIONES)
+TAMANIO_BOTON_GUARDAR = ANCHO // 2 - 80
+CENTRO_TITULO_OPCIONES = (ANCHO // 2, 100)
+#size_slider = (500, 10)
+#left_top_musica = (150, 180)
+#left_top_SONIDOs = (150, 270)
+#size_handle = (20, 20)
 
-size_slider = (500, 10)
-left_top_musica = (150, 180)
-left_top_sonidos = (150, 270)
-size_handle = (20, 20)
+#texto_opcion_musica = "Musica"
+#rect_slider_musica = pygame.Rect(*left_top_musica, *size_slider)
 
+#texto_opcion_sonidos = "Sonidos"
+#rect_slider_sonidos = pygame.Rect(*left_top_sonidos, *size_slider)
 
+# Confirmar salida
+TAMANIO_VENTANA_CONFIRMAR_SALIDA = (600, 380)
+IZQUIERDA_VENTANA_CONFIRMAR_SALIDA = ANCHO // 2 - TAMANIO_VENTANA_CONFIRMAR_SALIDA[0] // 2
+RECT_VENTANA_CONFIRMAR_SALIDA = pygame.Rect(IZQUIERDA_VENTANA_CONFIRMAR_SALIDA, 110, *TAMANIO_VENTANA_CONFIRMAR_SALIDA)
+CENTRO_TITULO_VENTANA_CONFIRMAR_SALIDA = (ANCHO // 2, 200)
 
-# Pantalla de fin del juego
-SIZE_VENTANA_FIN = (690, 430)
-LEFT_VENTANA_FIN = screen.get_width() // 2 - SIZE_VENTANA_FIN[0] // 2
-RECT_VENTANA_FIN = pygame.Rect(LEFT_VENTANA_FIN, 55, *SIZE_VENTANA_FIN)
+TAMANIO_BOTONES_CONFIRMAR_SALIDA = (80, 50)
+IZQUIERDA_BOTON_SI = ANCHO // 2 - (TAMANIO_VENTANA_CONFIRMAR_SALIDA[0] // 4 + TAMANIO_BOTONES_CONFIRMAR_SALIDA[0] // 2)
+IZQUIERDA_BOTON_NO = ANCHO // 2 + (TAMANIO_VENTANA_CONFIRMAR_SALIDA[0] // 4 - TAMANIO_BOTONES_CONFIRMAR_SALIDA[0] // 2)
+TITULO_VENTANA_CONFIRMAR_SALIDA = "¿Estás seguro de que deseas salir?"
 
-CENTER_RECT_TITULO_VENTANA_FIN = (400, 85)
+# Final del juego
+TAMANIO_VENTANA_FIN = (680, 520)
+IZQUIERDA_VENTANA_FIN = ANCHO // 2 - TAMANIO_VENTANA_FIN[0] // 2
+RECT_VENTANA_FIN = pygame.Rect(IZQUIERDA_VENTANA_FIN, 40, *TAMANIO_VENTANA_FIN)
+CENTRO_RECT_TITULO_VENTANA_FIN = (ANCHO // 2, 100)
 
-SIZE_BOTON_VOLVER_MENU = (200, 50)
-LEFT_BOTON_VOLVER_MENU = screen.get_width() // 2 - (SIZE_VENTANA_FIN[0] // 4 + SIZE_BOTON_VOLVER_MENU[0] // 2)
+TAMANIO_BOTON_VOLVER_MENU = (250, 50)
+IZQUIERDA_BOTON_VOLVER_MENU = ANCHO // 2 - 125
 TEXTO_BOTON_VOLVER_MENU = "Volver al menu"
-RECT_BOTON_VOLVER_MENU_DESDE_FIN = pygame.Rect(LEFT_BOTON_VOLVER_MENU, 500, *SIZE_BOTON_VOLVER_MENU)
+#RECT_BOTON_VOLVER_MENU_DESDE_FIN = pygame.Rect(IZQUIERDA_BOTON_VOLVER_MENU, 480, *TAMANIO_BOTON_VOLVER_MENU)
 
+RECT_BOTON_COMENZAR = pygame.Rect(IZQUIERDA_BOTONES, 240, *TAMANIO_BOTONES)
+RECT_BOTON_OPCIONES = pygame.Rect(IZQUIERDA_BOTONES, 320, *TAMANIO_BOTONES)
+RECT_BOTON_SALIR = pygame.Rect(IZQUIERDA_BOTONES, 400, *TAMANIO_BOTONES)
+RECT_BOTON_GUARDAR = pygame.Rect(ANCHO // 2 - 80, 480, 160, 60)
+RECT_BOTON_CONFIRMAR_SALIDA = pygame.Rect(IZQUIERDA_VENTANA_CONFIRMAR_SALIDA, 120, *TAMANIO_VENTANA_CONFIRMAR_SALIDA)
+RECT_BOTON_SI = pygame.Rect(IZQUIERDA_BOTON_SI, 360, *TAMANIO_BOTONES_CONFIRMAR_SALIDA)
+RECT_BOTON_NO = pygame.Rect(IZQUIERDA_BOTON_NO, 360, *TAMANIO_BOTONES_CONFIRMAR_SALIDA)
+RECT_BOTON_VOLVER_MENU = pygame.Rect(ANCHO // 2 - 300, 480, *TAMANIO_BOTONES)
+RECT_BOTON_ESTADISTICAS = pygame.Rect(ANCHO // 2 + 50, 480, *TAMANIO_BOTONES)
+RECT_BOTON_VOLVER_ESTADISTICAS = pygame.Rect(ANCHO // 2, 480, *TAMANIO_BOTON_VOLVER_MENU)
 
-
-
-
-
-
-
-texto_opcion_musica = "Musica"
-rect_slider_musica = pygame.Rect(*left_top_musica, *size_slider)
-
-
-
-texto_opcion_sonidos = "Sonidos"
-rect_slider_sonidos = pygame.Rect(*left_top_sonidos, *size_slider)
-
-
-
-rect_guardar = pygame.Rect(screen.get_width() // 2 - 80, 400, 160, 60)
-
-
-transparent_screen = pygame.Surface(size_screen)
-transparent_screen.fill(black)
-transparent_screen.set_alpha(192)
-
+BOTONES = {"comenzar": RECT_BOTON_COMENZAR,
+           "opciones": RECT_BOTON_OPCIONES,
+           "salir": RECT_BOTON_SALIR,
+           "guardar": RECT_BOTON_GUARDAR,
+           "confirmar_salida": RECT_BOTON_CONFIRMAR_SALIDA,
+           "si": RECT_BOTON_SI,
+           "no": RECT_BOTON_NO,
+           "volver_menu": RECT_BOTON_VOLVER_MENU,
+           "estadisticas": RECT_BOTON_ESTADISTICAS,
+           "volver_estadisticas": RECT_BOTON_VOLVER_ESTADISTICAS}
 
 
 #Flags
-diccionario_flags = {"running":True, "menu":True, "pause":False}
-is_running = True
+flags_pantallas = {"menu": True, "pause": False, "opciones": False, "estadisticas": False}
 in_menu = True
 in_pause = False
+flag_fin = False
+en_opciones = False
+pantalla_estadisticas = False
 timers_cargados = False
 
 

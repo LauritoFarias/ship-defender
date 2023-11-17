@@ -2,31 +2,10 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from random import randint, randrange
-from config import *
 
 def salir():
     pygame.quit()
     exit()
-
-
-
-def define_block(imagen = None, width:int = 800, height:int = 600, left:int = 0, top:int = 0, rect_width:int = 50, rect_height:int = 50, color:tuple = (255, 255, 255), dir:int = 9, borde:int = 0, radio:int = -1)->dict:
-
-    rect = pygame.Rect(left, top, rect_width, rect_height)
-    
-    if color != None:
-        block = ({"imagen": imagen, "rect": rect, "color": color, "dir": dir, "borde": borde, "radio": radio})
-    else:
-        block = ({"imagen": imagen, "rect": rect, "dir": dir, "borde": borde, "radio": radio})
-
-
-    return block
-
-
-
-def punto_en_rectangulo(punto, rect)->bool:
-    x, y = punto
-    return x >= rect.left and x <= rect.right and y >= rect.top and y <= rect.bottom
 
 
 
@@ -38,19 +17,37 @@ def mostrar_texto(superficie, texto, fuente, coordenadas, color_fuente, color_fo
 
 
 
-def wait_user():
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                salir()
-            if event.type == KEYDOWN:
-                if event.type == K_ESCAPE:
-                    salir()
-                return
+def dibujar_texto(surface, dir_fuente , text, color, size, x, y):
+    font = pygame.font.Font(dir_fuente, size)
+    text = font.render(text, True, color)
+    rect_texto = text.get_rect(center = (x, y))
+    surface.blit(text, rect_texto)
+
+
+
+def dibujar_texto_en_rectangulo(surface, rect, dir_fuente, text, color, size):
+    font = pygame.font.Font(dir_fuente, size)
+    text = font.render(text, True, color)
+    rect_texto = text.get_rect(center = rect.center)
+    surface.blit(text, rect_texto)
+
+
+
+def dibujar_texto_con_contorno(surface, estilo_titulo):
+    dibujar_texto(surface, estilo_titulo["dir_fuente"], estilo_titulo["texto"], estilo_titulo["color_contorno"], estilo_titulo["tamanio_fuente"], estilo_titulo["rect_x"] + estilo_titulo["ancho_contorno"], estilo_titulo["rect_y"] + estilo_titulo["ancho_contorno"])
+    dibujar_texto(surface, estilo_titulo["dir_fuente"], estilo_titulo["texto"], estilo_titulo["color_contorno"], estilo_titulo["tamanio_fuente"], estilo_titulo["rect_x"] + estilo_titulo["ancho_contorno"], estilo_titulo["rect_y"] - estilo_titulo["ancho_contorno"])
+    dibujar_texto(surface, estilo_titulo["dir_fuente"], estilo_titulo["texto"], estilo_titulo["color_contorno"], estilo_titulo["tamanio_fuente"], estilo_titulo["rect_x"] - estilo_titulo["ancho_contorno"], estilo_titulo["rect_y"] + estilo_titulo["ancho_contorno"])
+    dibujar_texto(surface, estilo_titulo["dir_fuente"], estilo_titulo["texto"], estilo_titulo["color_contorno"], estilo_titulo["tamanio_fuente"], estilo_titulo["rect_x"] - estilo_titulo["ancho_contorno"], estilo_titulo["rect_y"] - estilo_titulo["ancho_contorno"])
+    dibujar_texto(surface, estilo_titulo["dir_fuente"], estilo_titulo["texto"], estilo_titulo["color_fuente"], estilo_titulo["tamanio_fuente"], estilo_titulo["rect_x"], estilo_titulo["rect_y"])
             
 
 
-def invocar_menu_inicio(rect_comenzar, rect_opciones, rect_salir):
+def invocar_menu_inicio(superficie, origen, estilo_interfaz, estilo_titulo, imagen_fondo, rect_botones, rect_ventana_opciones, centro_titulo_opciones, rect_ventana_salida, centro_titulo_ventana_salida, archivo_musica, volumen_musica):
+    pygame.mixer.music.load(archivo_musica)
+
+    pygame.mixer.music.set_volume(volumen_musica)
+
+    pygame.mixer.music.play(-1)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -59,29 +56,29 @@ def invocar_menu_inicio(rect_comenzar, rect_opciones, rect_salir):
                 if event.type == K_ESCAPE:
                     salir()
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == PRIMARY_MOUSE_BUTTON:
-                    if rect_comenzar.collidepoint(event.pos):
+                if event.button == 1:
+                    if rect_botones["comenzar"].collidepoint(event.pos):
                         return
-                    elif rect_opciones.collidepoint(event.pos):
-                        screen.blit(transparent_screen, origin)
-                        invocar_ventana_opciones()
-                    elif rect_salir.collidepoint(event.pos):
-                        screen.blit(transparent_screen, origin)
-                        invocar_ventana_confirmar_salida(rect_confirmar_salida, rect_si, rect_no)
+                    elif rect_botones["opciones"].collidepoint(event.pos):
+                        superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
+                        invocar_ventana_opciones(superficie, estilo_interfaz, rect_ventana_opciones, centro_titulo_opciones, rect_botones["guardar"])
+                    elif rect_botones["salir"].collidepoint(event.pos):
+                        superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
+                        invocar_ventana_confirmar_salida(superficie, estilo_interfaz, rect_ventana_salida, centro_titulo_ventana_salida, rect_botones)
 
-        screen.blit(background_menu, origin)
+        superficie.blit(imagen_fondo, origen)
 
-        dibujar_texto_con_contorno(screen, archivo_fuente, titulo, title_fill_color, size_titulo, rect_titulo_x, rect_titulo_y, ancho_contorno, title_outline_color)
+        dibujar_texto_con_contorno(superficie, estilo_titulo)
 
-        crear_boton_con_contorno(screen, "Comenzar", button_fill_color, green, rect_comenzar, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color, select_sound)
-        crear_boton_con_contorno(screen, "Opciones", button_fill_color, green, rect_opciones, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color, select_sound)
-        crear_boton_con_contorno(screen, "Salir", button_fill_color, green, rect_salir, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color, select_sound)
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Comenzar", rect_botones["comenzar"])
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Opciones", rect_botones["opciones"])
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Salir", rect_botones["salir"])
 
         pygame.display.flip()
 
 
 
-def invocar_ventana_opciones():
+def invocar_ventana_opciones(superficie, estilo_interfaz, rect_ventana, centro_texto, rect_guardar):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -90,22 +87,19 @@ def invocar_ventana_opciones():
                 if event.type == K_ESCAPE:
                     salir()
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == PRIMARY_MOUSE_BUTTON:
+                if event.button == 1:
                     if rect_guardar.collidepoint(event.pos):
                         return
         
-        crear_ventana_con_contorno(screen, "Opciones", button_fill_color, rect_confirmar_salida, color_fuente_botones, fuente_botones, rect_text_ventana_center, ancho_contorno, title_outline_color)
+        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, "Opciones")
         
-        crear_slider(screen, title_outline_color, rect_slider_musica, white)
-        crear_slider(screen, title_outline_color, rect_slider_sonidos, white)
-
-        crear_boton_con_contorno(screen, "Guardar", button_fill_color, green, rect_guardar, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color)
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Guardar", rect_guardar)
 
         pygame.display.flip()
 
 
 
-def invocar_ventana_confirmar_salida(rect_confirmar_salida, rect_si, rect_no):
+def invocar_ventana_confirmar_salida(superficie, estilo_interfaz, rect_ventana, centro_texto, rect_botones):
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -114,25 +108,16 @@ def invocar_ventana_confirmar_salida(rect_confirmar_salida, rect_si, rect_no):
                 if event.type == K_ESCAPE:
                     salir()
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == PRIMARY_MOUSE_BUTTON:
-                    if rect_si.collidepoint(pygame.mouse.get_pos()):
+                if event.button == 1:
+                    if rect_botones["si"].collidepoint(pygame.mouse.get_pos()):
                         salir()
-                    if rect_no.collidepoint(pygame.mouse.get_pos()):
-                        if in_menu:
-                            return
-                        if in_pause:
-                            pause()
-        
-        #pygame.draw.rect(screen, button_fill_color, rect_confirmar_salida, 5, 5)
-        #render = fuente_botones.render(texto_ventana_confirmar_salida, True, color_fuente_botones)
-        #rect_text = render.get_rect(center = rect_confirmar_salida.center)
-        #screen.blit(render, rect_text)
-        
+                    if rect_botones["no"].collidepoint(pygame.mouse.get_pos()):
+                        return
 
-        crear_ventana_con_contorno(screen, texto_ventana_confirmar_salida, button_fill_color, rect_confirmar_salida, color_fuente_botones, fuente_botones, rect_text_ventana_center, ancho_contorno, title_outline_color)
+        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, "¿Estás seguro de que deseas salir?")
 
-        crear_boton_con_contorno(screen, "Si", button_fill_color, green, rect_si, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color)
-        crear_boton_con_contorno(screen, "No", button_fill_color, green, rect_no, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color)
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Sí", rect_botones["si"])
+        crear_boton_con_contorno(estilo_interfaz, superficie, "No", rect_botones["no"])
 
         pygame.display.flip()
 
@@ -147,7 +132,7 @@ def crear_slider(surface, color_slider, rect_slider, color_handle, default_value
     #rect_handle = pygame.Rect(rect_slider.left - 5, rect_slider.top - 5)
     for event in pygame.event.get():
         if event.type == MOUSEBUTTONDOWN:
-            if event.button == PRIMARY_MOUSE_BUTTON:
+            if event.button == 1:
                 if rect_slider.collidepoint(event.pos):
                     print("Hola mundo")
                     center_handle_x = pygame.mouse.get_pos()[0]
@@ -159,60 +144,36 @@ def crear_slider(surface, color_slider, rect_slider, color_handle, default_value
 
 
     
-def crear_ventana(surface, texto, bg_color, rect_ventana, font_color, fuente, rect_text_center):
-    pygame.draw.rect(surface, bg_color, rect_ventana, border_radius = 5)
-    render = fuente.render(texto, True, font_color)
-    rect_text = render.get_rect(center = rect_text_center)
-    surface.blit(render, rect_text)
+def crear_ventana(superficie, estilo_interfaz, rect_ventana, centro_texto, texto):
+    pygame.draw.rect(superficie, estilo_interfaz["color_relleno_botones"], rect_ventana)
+    dibujar_texto(superficie, estilo_interfaz["dir_fuente"], texto, estilo_interfaz["color_fuente"], estilo_interfaz["tamanio_fuente"], centro_texto[0], centro_texto[1])
 
 
 
-def crear_ventana_con_contorno(surface, texto, bg_color, rect_ventana, font_color, fuente, rect_text_center, ancho_contorno, color_contorno):
-    crear_ventana(surface, texto, bg_color, rect_ventana, font_color, fuente, rect_text_center)
-    pygame.draw.rect(surface, color_contorno, rect_ventana, ancho_contorno, 5)
+def crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto):
+    crear_ventana(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
+    pygame.draw.rect(superficie, estilo_interfaz["color_contorno"], rect_ventana, estilo_interfaz["ancho_contorno"], estilo_interfaz["radio_borde"])
 
 
 
-def crear_boton(surface, texto, bg_color, bg_color_hover, rect_boton, font_color, fuente, sonido = None):
-    if rect_boton.collidepoint(pygame.mouse.get_pos()):
-        #flag_collide = False
-        pygame.draw.rect(surface, bg_color_hover, rect_boton, border_radius = 5)
-        #if sonido and flag_collide == False:
-            #sonido.play()
-            #flag_collide = True
-    else:
-        pygame.draw.rect(surface, bg_color, rect_boton, border_radius = 5)
-    render = fuente.render(texto, True, font_color)
-    rect_text = render.get_rect(center = rect_boton.center)
-    surface.blit(render, rect_text)
-
-
-
-def crear_boton_con_contorno(surface, texto, bg_color, bg_color_hover, rect_boton, font_color, fuente, ancho_contorno, color_contorno, sonido = None):
-    crear_boton(surface, texto, bg_color, bg_color_hover, rect_boton, font_color, fuente, select_sound)
-    pygame.draw.rect(surface, color_contorno, rect_boton, ancho_contorno, 5)
+def crear_boton(estilo_interfaz, surface, texto, rect_boton):
     
-
-
-def dibujar_texto(surface, font, text, color, size, x, y):
-    font = pygame.font.Font(font, size)
-    text = font.render(text, True, color)
-    textbox = text.get_rect()
-    textbox.center = (x, y)
-    surface.blit(text, textbox)
-
-
-
-def dibujar_texto_con_contorno(surface, font, text, color_relleno, size, x, y, ancho_contorno, color_contorno):
-    dibujar_texto(surface, font, text, color_contorno, size, x + ancho_contorno, y + ancho_contorno)
-    dibujar_texto(surface, font, text, color_contorno, size, x + ancho_contorno, y - ancho_contorno)
-    dibujar_texto(surface, font, text, color_contorno, size, x - ancho_contorno, y + ancho_contorno)
-    dibujar_texto(surface, font, text, color_contorno, size, x - ancho_contorno, y - ancho_contorno)
-    dibujar_texto(surface, font, text, color_relleno, size, x, y)
+    if rect_boton.collidepoint(pygame.mouse.get_pos()):
+        pygame.draw.rect(surface, estilo_interfaz["color_relleno_hover_botones"], rect_boton, border_radius = 5)
+        dibujar_texto_en_rectangulo(surface, rect_boton, estilo_interfaz["dir_fuente"], texto, estilo_interfaz["color_fuente"], estilo_interfaz["tamanio_fuente"])
+    else:
+        pygame.draw.rect(surface, estilo_interfaz["color_relleno_botones"], rect_boton, border_radius = 5)
+        dibujar_texto_en_rectangulo(surface, rect_boton, estilo_interfaz["dir_fuente"], texto, estilo_interfaz["color_fuente"], estilo_interfaz["tamanio_fuente"])
 
 
 
-def pause():
+def crear_boton_con_contorno(estilo_interfaz, surface, texto, rect_boton):
+    crear_boton(estilo_interfaz, surface, texto, rect_boton)
+    pygame.draw.rect(surface, estilo_interfaz["color_contorno"], rect_boton, estilo_interfaz["ancho_contorno"], 5)
+
+
+
+def pausa(superficie, estilo_interfaz, rect_botones):
     in_pause = True
     while in_pause:
         for event in pygame.event.get():
@@ -224,21 +185,27 @@ def pause():
                 if event.type == K_p:
                     return
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == PRIMARY_MOUSE_BUTTON:
-                    if rect_opciones.collidepoint(pygame.mouse.get_pos()):
+                if event.button == 1:
+                    if rect_botones["opciones"].collidepoint(pygame.mouse.get_pos()):
                         invocar_ventana_opciones()
-                    if rect_volver_menu.collidepoint(pygame.mouse.get_pos()):
+                    if rect_botones["volver_menu"].collidepoint(pygame.mouse.get_pos()):
                         return
         
-        crear_boton_con_contorno(screen, "Opciones", button_fill_color, green, rect_opciones, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color)
-        crear_boton_con_contorno(screen, "Volver al menu", button_fill_color, green, rect_volver_menu, color_fuente_botones, fuente_botones, ancho_contorno, title_outline_color)
+        
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Opciones", rect_botones["opciones"])
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver al menu", rect_botones["volver_menu"])
 
         pygame.display.flip()
 
 
 
-def fin_del_juego(surface, texto, bg_color, rect_ventana, font_color, fuente_textos, rect_text_center, rect_volver_menu, ancho_contorno, color_contorno):
+def fin_del_juego(superficie, origen, estilo_interfaz, rect_ventana, centro_texto, texto, rect_botones, contador_enemigos_muertos, milisegundos, archivo_musica, volumen_musica, flags_pantallas):
+    superficie.blit(estilo_interfaz["oscurecer_pantalla"], origen)
+    pygame.mixer.music.load(archivo_musica)
 
+    pygame.mixer.music.set_volume(volumen_musica)
+
+    pygame.mixer.music.play(-1)
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -247,14 +214,80 @@ def fin_del_juego(surface, texto, bg_color, rect_ventana, font_color, fuente_tex
                 if event.type == K_ESCAPE:
                     salir()
             if event.type == MOUSEBUTTONDOWN:
-                if event.button == PRIMARY_MOUSE_BUTTON:
-                    if rect_volver_menu.collidepoint(event.pos):
-                        return
-        
-        crear_ventana_con_contorno(surface, texto, bg_color, rect_ventana, font_color, fuente_textos, rect_text_center, ancho_contorno, color_contorno)
+                if event.button == 1:
+                    if rect_botones["volver_menu"].collidepoint(event.pos):
+                        flags_pantallas["fin"] = False
+                        flags_pantallas["menu"] = True
+                        return flags_pantallas
+                    if rect_botones["estadisticas"].collidepoint(event.pos):
+                        estadisticas(superficie, estilo_interfaz, rect_botones, rect_ventana, "Estadisticas", centro_texto)
 
-        crear_boton_con_contorno(surface, "Volver al menu", button_fill_color, green, rect_volver_menu, font_color, fuente_textos, ancho_contorno, color_contorno)
 
+
+        puntaje_veleros = contador_enemigos_muertos["velero"] * 10
+
+        puntaje_barcos = contador_enemigos_muertos["barco"] * 20
+
+        puntaje_fragatas = contador_enemigos_muertos["fragata"] * 30
+
+        puntaje_lanchas = contador_enemigos_muertos["lancha"] * 50
+
+        puntaje_portaaviones = contador_enemigos_muertos["portaaviones"] * 50
+
+        puntaje_tiempo = 0
+
+        minutos_completos = milisegundos // 60000
+
+        puntos_por_segundo = 1
+
+
+
+        for minuto in range(minutos_completos):
+            puntaje_tiempo += minuto * puntos_por_segundo * 60
+            puntos_por_segundo *= 2
         
+        milisegundos_restantes = milisegundos % 60000
+
+        segundos_restantes = milisegundos_restantes // 1000
+
+        for segundo in range(segundos_restantes):
+            puntaje_tiempo += segundo * puntos_por_segundo
+        
+        puntaje_total = puntaje_veleros + puntaje_barcos + puntaje_fragatas + puntaje_lanchas + puntaje_portaaviones + puntaje_tiempo
+
+        print(milisegundos)
+        
+        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)
+
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por veleros: {puntaje_veleros}", estilo_interfaz["color_fuente"], 24, 400, 180)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por barcos: {puntaje_barcos}", estilo_interfaz["color_fuente"], 24, 400, 220)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por fragatas: {puntaje_fragatas}", estilo_interfaz["color_fuente"], 24, 400, 260)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por lanchas: {puntaje_lanchas}", estilo_interfaz["color_fuente"], 24, 400, 300)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por portaaviones: {puntaje_portaaviones}", estilo_interfaz["color_fuente"], 24, 400, 340)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje por tiempo: {puntaje_tiempo}", estilo_interfaz["color_fuente"], 24, 400, 380)
+        dibujar_texto(superficie, estilo_interfaz["dir_fuente"], f"Puntaje total: {puntaje_total}", estilo_interfaz["color_fuente"], 24, 400, 420)
+        
+
+
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Volver al menu", rect_botones["volver_menu"])
+
+        crear_boton_con_contorno(estilo_interfaz, superficie, "Estadisticas", rect_botones["estadisticas"])
 
         pygame.display.flip()
+
+
+
+def estadisticas(superficie, estilo_interfaz, rect_botones, rect_ventana, texto, centro_texto):
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                salir()
+            if event.type == KEYDOWN:
+                if event.type == K_ESCAPE:
+                    salir()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if rect_botones["volver_estadisticas"].collidepoint(event.pos):
+                        return
+    
+        crear_ventana_con_contorno(superficie, estilo_interfaz, rect_ventana, centro_texto, texto)

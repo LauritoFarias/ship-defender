@@ -4,11 +4,8 @@ from math import cos, sin, radians
 def disparar(imagen_disparo, centro, angulo_jugador, direccion, velocidad):
 
     angulo_jugador_radianes = radians(angulo_jugador - 90)
-    offset_x = 20 * cos(angulo_jugador_radianes)
+    #offset_x = 20 * cos(angulo_jugador_radianes)
     offset_y = 20 * sin(angulo_jugador_radianes)
-
-    print(offset_x)
-    print(offset_y)
     
     if direccion == "forward":
         rect_disparo = pygame.Rect(centro[0] - 4, centro[1] + offset_y, 8, 8)
