@@ -1,6 +1,5 @@
 import pygame
 from funciones_interfaz import *
-from funciones_sonidos import *
 from funciones_enemigos import *
 from funciones_acciones import *
 from utils import *
@@ -115,13 +114,13 @@ while True:
     ##########     Menu principal    ##########
 
     if flags_pantallas["menu"]:
-        invocar_menu_inicio(PANTALLA, ORIGEN, ESTILO_INTERFAZ, ESTILO_TITULO, FONDO_MENU, BOTONES, RECT_VENTANA_OPCIONES, CENTRO_TITULO_OPCIONES, RECT_VENTANA_CONFIRMAR_SALIDA, CENTRO_TITULO_VENTANA_CONFIRMAR_SALIDA, ARCHIVO_MUSICA_MENU, VOLUMEN_MUSICA)
+        invocar_menu_inicio(PANTALLA, ORIGEN, ESTILO_INTERFAZ, ESTILO_TITULO, FONDO_MENU, BOTONES, RECT_VENTANA_OPCIONES, CENTRO_TITULO_OPCIONES, RECT_VENTANA_CONFIRMAR_SALIDA, CENTRO_TITULO_VENTANA_CONFIRMAR_SALIDA, ARCHIVO_MUSICA_MENU, VOLUMEN_MUSICA, flags_pantallas)
         flags_pantallas["menu"] = False
         en_opciones = True
 
     ##########     Juego     ##########
 
-    if not siguiente_musica:
+    if not siguiente_musica and flags_pantallas["musica_on"]:
 
         pygame.mixer.music.load(ARCHIVO_MUSICA_BATALLA)
 
@@ -131,7 +130,7 @@ while True:
 
         siguiente_musica = True
     
-    #player["vidas"] = 0
+    
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -168,7 +167,6 @@ while True:
                     disparo_jugador = disparar(cannonball, player["rect"].center, angulo_jugador, "left", velocidad_disparo_jugador)
                     cooldown_disparo_jugador = True
                     SONIDO_DISPARO_CANION.play()
-                    print("sonido")
                     milisegundos_ultimo_disparo_jugador = pygame.time.get_ticks()
                     disparos_jugador.append(disparo_jugador)
             
@@ -193,12 +191,7 @@ while True:
                 flag_primer_velero = True
             else:
                 x_invocacion_velero = randint(50, 750)
-                #for enemigo in enemigos:
-                    #if x_invocacion_velero >= enemigo["rect"].left and x_invocacion_velero <= enemigo["rect"].right:
-                        #vacio_para_invocar_velero = False
-                        #break
-
-                #if vacio_para_invocar_velero:
+                
                 velero = invocar_enemigo("velero", x_invocacion_velero)
                 enemigos.append(velero)
             
@@ -207,12 +200,7 @@ while True:
         
         if event.type == EVENTO_INVOCAR_BARCO:
             x_invocacion_barco = randint(50, 750)
-            #for enemigo in enemigos:
-                #if x_invocacion_barco >= enemigo["rect"].left and x_invocacion_barco <= enemigo["rect"].right:
-                    #vacio_para_invocar_barco = False
-                    #break
-
-            #if vacio_para_invocar_barco:
+            
             barco = invocar_enemigo("barco", x_invocacion_barco)
             enemigos.append(barco)
 
@@ -220,12 +208,7 @@ while True:
         
         if event.type == EVENTO_INVOCAR_FRAGATA:
             x_invocacion_fragata = randint(50, 750)
-            #for enemigo in enemigos:
-                #if x_invocacion_fragata >= enemigo["rect"].left and x_invocacion_fragata <= enemigo["rect"].right:
-                    #vacio_para_invocar_fragata = False
-                    #break
-
-            #if vacio_para_invocar_fragata:
+            
             fragata = invocar_enemigo("fragata", x_invocacion_fragata)
             enemigos.append(fragata)
 
@@ -233,12 +216,7 @@ while True:
         
         if event.type == EVENTO_INVOCAR_LANCHA:
             x_invocacion_lancha = randint(50, 750)
-            #for enemigo in enemigos:
-                #if x_invocacion_lancha >= enemigo["rect"].left and x_invocacion_lancha <= enemigo["rect"].right:
-                    #vacio_para_invocar_lancha = False
-                    #break
-
-            #if vacio_para_invocar_lancha:
+            
             lancha = invocar_enemigo("lancha", x_invocacion_lancha)
             enemigos.append(lancha)
 
@@ -246,18 +224,11 @@ while True:
         
         if event.type == EVENTO_INVOCAR_PORTAAVIONES:
             x_invocacion_portaaviones = randint(50, 750)
-            #for enemigo in enemigos:
-                #if x_invocacion_portaaviones >= enemigo["rect"].left and x_invocacion_portaaviones <= enemigo["rect"].right:
-                    #vacio_para_invocar_portaaviones = False
-                    #break
-
-            #if vacio_para_invocar_portaaviones:
+            
             portaaviones = invocar_enemigo("portaaviones", x_invocacion_portaaviones)
             enemigos.append(portaaviones)
 
             pygame.time.set_timer(EVENTO_INVOCAR_PORTAAVIONES, randint(30000, 60000))
-
-    #reproducir_musica_de_fondo(diccionario_archivos_musica["juego"],volumen_musica)
 
 
 
@@ -393,14 +364,6 @@ while True:
         moviendo_hacia_derecha = False
     
     
-
-    # Manejar movimiento del jugador
-    #if mover_proa and player["rect"].top >= 0 and player["rect"].bottom <= ALTO:
-        #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-        #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-    #if mover_popa and player["rect"].bottom <= ALTO and player["rect"].top >= 0:
-        #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-        #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
     
     if moviendo_hacia_arriba and player["rect"].top >= 0:
         if (moviendo_hacia_izquierda and player["rect"].left >= 0) or (moviendo_hacia_derecha and player["rect"].right <= ANCHO):
@@ -418,22 +381,7 @@ while True:
             if mover_popa:
                 player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
                 player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-    #if moviendo_hacia_izquierda and player["rect"].left >= 0:
-        #if mover_proa:
-            #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-            #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-        #if mover_popa:
-            #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-            #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-    #if moviendo_hacia_derecha and player["rect"].right <= ANCHO:
-        #if mover_proa:
-            #player["rect"].centerx += mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-            #player["rect"].centery += mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
-        #if mover_popa:
-            #player["rect"].centerx -= mover_segun_angulo(angulo_jugador, player["velocidad"])[0]
-            #player["rect"].centery -= mover_segun_angulo(angulo_jugador, player["velocidad"])[1]
 
-    
 
 
     # Manejar disparos de enemigos(direccion, velocidad, colision con jugador y eliminarlos cuando salgan de la pantalla)

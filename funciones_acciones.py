@@ -4,7 +4,7 @@ from math import cos, sin, radians
 def disparar(imagen_disparo, centro, angulo_jugador, direccion, velocidad):
 
     angulo_jugador_radianes = radians(angulo_jugador - 90)
-    #offset_x = 20 * cos(angulo_jugador_radianes)
+    
     offset_y = 20 * sin(angulo_jugador_radianes)
     
     if direccion == "forward":

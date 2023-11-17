@@ -27,7 +27,8 @@ FONDO_PARTIDA = pygame.transform.scale(FONDO_PARTIDA, TAMANIO_PANTALLA)
 IMAGEN_VIDAS = pygame.image.load(r"assets\Imagenes\pirate-flag.png")
 RECT_IMAGEN_VIDAS = IMAGEN_VIDAS.get_rect()
 
-# Configuracion
+
+
 FPS = 60
 
 
@@ -132,16 +133,6 @@ IZQUIERDA_VENTANA_OPCIONES = ANCHO // 2 - TAMANIO_VENTANA_OPCIONES[0] // 2
 RECT_VENTANA_OPCIONES = pygame.Rect(IZQUIERDA_VENTANA_OPCIONES, 40, *TAMANIO_VENTANA_OPCIONES)
 TAMANIO_BOTON_GUARDAR = ANCHO // 2 - 80
 CENTRO_TITULO_OPCIONES = (ANCHO // 2, 100)
-#size_slider = (500, 10)
-#left_top_musica = (150, 180)
-#left_top_SONIDOs = (150, 270)
-#size_handle = (20, 20)
-
-#texto_opcion_musica = "Musica"
-#rect_slider_musica = pygame.Rect(*left_top_musica, *size_slider)
-
-#texto_opcion_sonidos = "Sonidos"
-#rect_slider_sonidos = pygame.Rect(*left_top_sonidos, *size_slider)
 
 # Confirmar salida
 TAMANIO_VENTANA_CONFIRMAR_SALIDA = (600, 380)
@@ -163,11 +154,14 @@ CENTRO_RECT_TITULO_VENTANA_FIN = (ANCHO // 2, 100)
 TAMANIO_BOTON_VOLVER_MENU = (250, 50)
 IZQUIERDA_BOTON_VOLVER_MENU = ANCHO // 2 - 125
 TEXTO_BOTON_VOLVER_MENU = "Volver al menu"
-#RECT_BOTON_VOLVER_MENU_DESDE_FIN = pygame.Rect(IZQUIERDA_BOTON_VOLVER_MENU, 480, *TAMANIO_BOTON_VOLVER_MENU)
+
+
 
 RECT_BOTON_COMENZAR = pygame.Rect(IZQUIERDA_BOTONES, 240, *TAMANIO_BOTONES)
 RECT_BOTON_OPCIONES = pygame.Rect(IZQUIERDA_BOTONES, 320, *TAMANIO_BOTONES)
 RECT_BOTON_SALIR = pygame.Rect(IZQUIERDA_BOTONES, 400, *TAMANIO_BOTONES)
+RECT_BOTON_SILENCIAR_MUSICA = pygame.Rect(ANCHO // 2 - 150, 280, 300, 60)
+RECT_BOTON_SILENCIAR_SONIDOS = pygame.Rect(ANCHO // 2 - 150, 380, 300, 60)
 RECT_BOTON_GUARDAR = pygame.Rect(ANCHO // 2 - 80, 480, 160, 60)
 RECT_BOTON_CONFIRMAR_SALIDA = pygame.Rect(IZQUIERDA_VENTANA_CONFIRMAR_SALIDA, 120, *TAMANIO_VENTANA_CONFIRMAR_SALIDA)
 RECT_BOTON_SI = pygame.Rect(IZQUIERDA_BOTON_SI, 360, *TAMANIO_BOTONES_CONFIRMAR_SALIDA)
@@ -178,6 +172,8 @@ RECT_BOTON_VOLVER_ESTADISTICAS = pygame.Rect(ANCHO // 2 - 125, 480, *TAMANIO_BOT
 
 BOTONES = {"comenzar": RECT_BOTON_COMENZAR,
            "opciones": RECT_BOTON_OPCIONES,
+           "silenciar_musica": RECT_BOTON_SILENCIAR_MUSICA,
+           "silenciar_sonidos": RECT_BOTON_SILENCIAR_SONIDOS,
            "salir": RECT_BOTON_SALIR,
            "guardar": RECT_BOTON_GUARDAR,
            "confirmar_salida": RECT_BOTON_CONFIRMAR_SALIDA,
@@ -219,10 +215,13 @@ SCROLL_DOWN_MOUSE = 5
 
 ##########     FLAGS    ##########
 
-flags_pantallas = {"menu": True, "pause": False, "opciones": False, "fin": False, "estadisticas": False,"puntajes_guardados": False}
-in_menu = True
-in_pause = False
-flag_fin = False
-en_opciones = False
-pantalla_estadisticas = False
-timers_cargados = False
+flags_pantallas = {"menu": True,
+                   "pause": False,
+                   "opciones": False,
+                   "fin": False,
+                   "estadisticas": False,
+                   "puntajes_guardados": False,
+                   "musica_on": True,
+                   "musica_off": False,
+                   "sonido_on": True,
+                   "sonido_off": False}
