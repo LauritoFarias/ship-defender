@@ -36,7 +36,7 @@ def disparar(imagen_disparo, centro, angulo_jugador, direccion, velocidad):
 
 
 def mover_segun_angulo(angulo, velocidad):
-    """Determina el vector de movimiento x, y del jugador según su ángulo.
+    """Determina el vector de movimiento (x, y) del jugador según su ángulo.
 
     Args:
         angulo (int): ángulo del jugador

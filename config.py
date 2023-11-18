@@ -116,6 +116,7 @@ SONIDO_DISPARO_CANION = pygame.mixer.Sound(r"assets\Sonidos\cannon-shot.mp3")
 SONIDO_EXPLOSION_1 = pygame.mixer.Sound(r"assets\Sonidos\explosion-1.mp3")
 SONIDO_EXPLOSION_2 = pygame.mixer.Sound(r"assets\Sonidos\explosion-2.mp3")
 SONIDO_IMPACTO_MUNICION = pygame.mixer.Sound(r"assets\Sonidos\impacto-municion.mp3")
+SONIDO_VELERO_ARROLLADO = pygame.mixer.Sound(r"assets\Sonidos\velero-arrollado.mp3")
 SONIDOS = [SONIDO_SELECCION, SONIDO_BALA, SONIDO_DISPARO_CANION, SONIDO_EXPLOSION_1, SONIDO_EXPLOSION_2, SONIDO_IMPACTO_MUNICION]
 
 
@@ -203,6 +204,29 @@ velocidad_disparo_jugador = 4
 
 
 
+###########     ENEMIGOS     ##########
+
+# Disparos
+bala = pygame.image.load(r"assets\Imagenes\bala.png")
+rect_bala = bala.get_rect()
+mask_bala = pygame.mask.from_surface(bala)
+diccionario_bala = {"mask": mask_bala, "imagen": bala, "rect": rect_bala}
+
+cannonball = pygame.image.load(r"assets\Imagenes\cannonball.png")
+rect_cannonball = cannonball.get_rect()
+mask_cannonball = pygame.mask.from_surface(cannonball)
+diccionario_cannonball = {"mask": mask_cannonball, "imagen": cannonball, "rect": rect_cannonball}
+
+# Velero
+imagen_velero = pygame.image.load(r"assets\Imagenes\velero.png")
+imagen_velero = pygame.transform.scale(imagen_velero, (15, 55))
+imagen_velero_rect = imagen_velero.get_rect()
+mask_velero = pygame.mask.from_surface(imagen_velero)
+
+diccionario_velero = {"tipo": "velero", "mask": mask_velero, "imagen": imagen_velero, "rect": imagen_velero_rect, "disparo": diccionario_bala, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 4, "vidas": 1, "arrollable": True, "hit": False}
+
+
+
 ##########     TECLAS     ##########
 
 PRIMARY_MOUSE_BUTTON = 1
@@ -215,13 +239,13 @@ SCROLL_DOWN_MOUSE = 5
 
 ##########     FLAGS    ##########
 
-flags_pantallas = {"menu": True,
-                   "pause": False,
-                   "opciones": False,
-                   "fin": False,
-                   "estadisticas": False,
-                   "puntajes_guardados": False,
-                   "musica_on": True,
-                   "musica_off": False,
-                   "sonido_on": True,
-                   "sonido_off": False}
+flags = {"menu": True,
+            "pause": False,
+            "opciones": False,
+            "fin": False,
+            "estadisticas": False,
+            "puntajes_guardados": False,
+            "musica_on": True,
+            "musica_off": False,
+            "sonido_on": True,
+            "sonido_off": False}

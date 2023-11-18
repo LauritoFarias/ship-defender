@@ -49,7 +49,7 @@ def invocar_fragata():
     imagen_fragata_rect = imagen_fragata.get_rect()
     mask_fragata = pygame.mask.from_surface(imagen_fragata)
 
-    diccionario_fragata = {"tipo": "fragata", "mask": mask_fragata, "imagen": imagen_fragata, "rect": imagen_fragata_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 2, "velocidad_disparo": 8, "vidas": 2, "arrollable": False, "hit": False}
+    diccionario_fragata = {"tipo": "fragata", "mask": mask_fragata, "imagen": imagen_fragata, "rect": imagen_fragata_rect, "disparo": diccionario_cannonball, "milisegundos": pygame.time.get_ticks(), "velocidad_movimiento": 1, "velocidad_disparo": 8, "vidas": 2, "arrollable": False, "hit": False}
 
     return diccionario_fragata
 
@@ -90,16 +90,21 @@ def invocar_portaaviones():
 
 
 def invocar_enemigo(tipo_enemigo, x_invocacion):
-    if tipo_enemigo == "velero":
-        diccionario_enemigo = invocar_velero()
-    if tipo_enemigo == "barco":
-        diccionario_enemigo = invocar_barco()
-    if tipo_enemigo == "fragata":
-        diccionario_enemigo = invocar_fragata()
-    if tipo_enemigo == "lancha":
-        diccionario_enemigo = invocar_lancha()
-    if tipo_enemigo == "portaaviones":
-        diccionario_enemigo = invocar_portaaviones()
+    try:
+
+        if tipo_enemigo == "velero":
+            diccionario_enemigo = invocar_velero()
+        if tipo_enemigo == "barco":
+            diccionario_enemigo = invocar_barco()
+        if tipo_enemigo == "fragata":
+            diccionario_enemigo = invocar_fragata()
+        if tipo_enemigo == "lancha":
+            diccionario_enemigo = invocar_lancha()
+        if tipo_enemigo == "portaaviones":
+            diccionario_enemigo = invocar_portaaviones()
+    
+    except:
+        print("No se ha detectado ningún tipo de enemigo")
     
     diccionario_enemigo["rect"].centerx = x_invocacion
     diccionario_enemigo["rect"].bottom = 0
@@ -222,7 +227,6 @@ def crear_disparo_al_jugador(enemigo_disparo:dict, imagen_disparo, posicion, dir
 
 def disparar_al_jugador(player, enemigo, milisegundos, disparos_enemigos, sonido_bala, sonido_cannon_shot):
     tipo_enemigo = enemigo["tipo"]
-    temporizador = 0
 
     if tipo_enemigo == "velero":
         temporizador = 3000

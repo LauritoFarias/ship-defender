@@ -9,6 +9,7 @@ from config import *
 from pygame.locals import *
 from enemies import *
 
+
 ##########     Inicializar los modulos de pygame     ##########
 
 pygame.init()
@@ -39,7 +40,7 @@ for sonido in SONIDOS:
 
 
 # Inicializar variables
-player = {"mask": mask_jugador, "imagen": imagen_jugador, "rect": rect_imagen_jugador, "disparo": None, "velocidad": 2, "vidas": 3}
+player = {"mask": mask_jugador, "imagen": imagen_jugador, "rect": rect_imagen_jugador, "disparo": None, "velocidad": 4, "vidas": 3}
 
 disparos_jugador = []
 
@@ -49,7 +50,7 @@ disparos_enemigos = []
 
 is_running = True
 
-cooldown_disparo_jugador = 0
+cooldown_disparo_jugador = False
 
 milisegundos_ultimo_disparo_jugador = 0
 
@@ -86,27 +87,24 @@ milisegundos = 0
 EVENTO_INVOCAR_VELERO = USEREVENT + 1
 pygame.time.set_timer(EVENTO_INVOCAR_VELERO, 3000)
 flag_primer_velero = False
-vacio_para_invocar_velero = True
 
 EVENTO_INVOCAR_BARCO = USEREVENT + 2
-pygame.time.set_timer(EVENTO_INVOCAR_BARCO, 15000)
+pygame.time.set_timer(EVENTO_INVOCAR_BARCO, 10000)
 flag_primer_barco = False
-vacio_para_invocar_barco = True
 
 EVENTO_INVOCAR_FRAGATA = USEREVENT + 3
-pygame.time.set_timer(EVENTO_INVOCAR_FRAGATA, 50000)
+pygame.time.set_timer(EVENTO_INVOCAR_FRAGATA, 15000)
 flag_primera_fragata = False
-vacio_para_invocar_fragata = True
 
 EVENTO_INVOCAR_LANCHA = USEREVENT + 4
-pygame.time.set_timer(EVENTO_INVOCAR_LANCHA, 80000)
+pygame.time.set_timer(EVENTO_INVOCAR_LANCHA, 18000)
 flag_primera_lancha = False
-vacio_para_invocar_lancha = True
 
 EVENTO_INVOCAR_PORTAAVIONES = USEREVENT + 5
-pygame.time.set_timer(EVENTO_INVOCAR_PORTAAVIONES, 120000)
+pygame.time.set_timer(EVENTO_INVOCAR_PORTAAVIONES, 20000)
 flag_primer_portaaviones = False
-vacio_para_invocar_portaaviones = True
+
+
 
 while True:
 
@@ -116,14 +114,14 @@ while True:
 
     ##########     Menu principal    ##########
 
-    if flags_pantallas["menu"]:
-        invocar_menu_inicio(PANTALLA, ORIGEN, ESTILO_INTERFAZ, ESTILO_TITULO, FONDO_MENU, BOTONES, RECT_VENTANA_OPCIONES, CENTRO_TITULO_OPCIONES, RECT_VENTANA_CONFIRMAR_SALIDA, CENTRO_TITULO_VENTANA_CONFIRMAR_SALIDA, ARCHIVO_MUSICA_MENU, VOLUMEN_MUSICA, flags_pantallas)
-        flags_pantallas["menu"] = False
+    if flags["menu"]:
+        invocar_menu_inicio(PANTALLA, ORIGEN, ESTILO_INTERFAZ, ESTILO_TITULO, FONDO_MENU, BOTONES, RECT_VENTANA_OPCIONES, CENTRO_TITULO_OPCIONES, RECT_VENTANA_CONFIRMAR_SALIDA, CENTRO_TITULO_VENTANA_CONFIRMAR_SALIDA, ARCHIVO_MUSICA_MENU, VOLUMEN_MUSICA, flags)
+        flags["menu"] = False
         en_opciones = True
 
     ##########     Juego     ##########
 
-    if not siguiente_musica and flags_pantallas["musica_on"]:
+    if not siguiente_musica and flags["musica_on"]:
 
         pygame.mixer.music.load(ARCHIVO_MUSICA_BATALLA)
 
@@ -135,6 +133,7 @@ while True:
     
     
 
+    # Manejo de eventos
     for event in pygame.event.get():
         if event.type == QUIT:
             salir()
@@ -172,8 +171,6 @@ while True:
                     SONIDO_DISPARO_CANION.play()
                     milisegundos_ultimo_disparo_jugador = pygame.time.get_ticks()
                     disparos_jugador.append(disparo_jugador)
-            
-
         
         if event.type == KEYUP:
             if event.key == K_UP:
@@ -185,7 +182,7 @@ while True:
             if event.key == K_LEFT:
                 aumentar_angulo = False
             
-            
+    
         
         # Manejo de eventos de invocación de enemigos
         if event.type == EVENTO_INVOCAR_VELERO:
@@ -248,9 +245,13 @@ while True:
         if not player_hit:
             offset = (enemigo["rect"].x - player["rect"].x, enemigo["rect"].y - player["rect"].y) 
             if player["mask"].overlap(enemigo["mask"], offset):
-                player_hit = True
-                player["vidas"] -= 1
-                SONIDO_IMPACTO_MUNICION.play()
+                if enemigo["arrollable"]:
+                    SONIDO_VELERO_ARROLLADO.play()
+                    enemigos.remove(enemigo)
+                else:
+                    player_hit = True
+                    player["vidas"] -= 1
+                    SONIDO_IMPACTO_MUNICION.play()
 
                 contador_player_hit = milisegundos
 
@@ -262,22 +263,15 @@ while True:
     for disparo_jugador in disparos_jugador:
         
         if disparo_jugador:
-
-            if disparo_jugador["direccion"] == "forward":
-                disparo_jugador["rect"].centerx += disparo_jugador["angulo"][0]
-                disparo_jugador["rect"].centery += disparo_jugador["angulo"][1]
-            if disparo_jugador["direccion"] == "right":
-                disparo_jugador["rect"].centerx += disparo_jugador["angulo"][0]
-                disparo_jugador["rect"].centery += disparo_jugador["angulo"][1]
-            if disparo_jugador["direccion"] == "left":
-                disparo_jugador["rect"].centerx += disparo_jugador["angulo"][0]
-                disparo_jugador["rect"].centery += disparo_jugador["angulo"][1]
             
-            if out_of_screen(disparo_jugador["rect"], ANCHO, ALTO):
+            disparo_jugador["rect"].centerx += disparo_jugador["angulo"][0]
+            disparo_jugador["rect"].centery += disparo_jugador["angulo"][1]
+            
+            if fuera_de_pantalla(disparo_jugador["rect"], ANCHO, ALTO):
                 disparos_jugador.remove(disparo_jugador)
             
 
-        
+        # Manejar colisiones de enemigos con disparos del jugador
         for enemigo in enemigos:
             offset = (disparo_jugador["rect"].x - enemigo["rect"].x, disparo_jugador["rect"].y - enemigo["rect"].y)
 
@@ -285,11 +279,13 @@ while True:
                 if enemigo["mask"].overlap(disparo_jugador["mask"], offset):
                     disparos_jugador.remove(disparo_jugador)
                     enemigo["vidas"] -= 1
-                    SONIDO_IMPACTO_MUNICION.play()
                     if enemigo["vidas"] == 0:
+                        if enemigo["tipo"] == "velero" or enemigo["tipo"] == "barco" or enemigo["tipo"] == "lancha":
+                            SONIDO_EXPLOSION_1.play()
+                        elif enemigo["tipo"] == "fragata" or enemigo["tipo"] == "portaaviones":
+                            SONIDO_EXPLOSION_2.play()
                         enemigos.remove(enemigo)
                         contar_nave_destruida(enemigo["tipo"], contador_enemigos_muertos)
-                        print(contador_enemigos_muertos)
                     else:
                         enemigo["hit"] == True
                         contador_enemigo_hit = milisegundos
@@ -304,15 +300,10 @@ while True:
                     enemigo["hit"] = False
                     player["imagen"].set_alpha(255)
 
-                if enemigo["tipo"] == "velero" or enemigo["tipo"] == "barco" or enemigo["tipo"] == "lancha":
-                    SONIDO_EXPLOSION_1.play()
-                elif enemigo["tipo"] == "fragata" or enemigo["tipo"] == "portaaviones":
-                    SONIDO_EXPLOSION_2.play()
-
 
     
     # Tiempo de espera para que el jugador dispare
-    if milisegundos - milisegundos_ultimo_disparo_jugador >= 1500:
+    if milisegundos - milisegundos_ultimo_disparo_jugador >= 1000:
         cooldown_disparo_jugador = False
     
 
@@ -410,7 +401,7 @@ while True:
 
                 contador_player_hit = milisegundos
         
-        if out_of_screen(disparo_enemigo["rect"], ANCHO, ALTO):
+        if fuera_de_pantalla(disparo_enemigo["rect"], ANCHO, ALTO):
             disparos_enemigos.remove(disparo_enemigo)
 
     ##########     EFECTOS ESPECIALES     ##########
@@ -450,10 +441,10 @@ while True:
     ##########     FIN DEL JUEGO     ##########
 
     if player["vidas"] == 0:
-        flags_pantallas["fin"] = True
+        flags["fin"] = True
     
-    while flags_pantallas["fin"]:
-        flags_pantallas = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, contador_enemigos_muertos, milisegundos, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags_pantallas)
+    while flags["fin"]:
+        flags = fin_del_juego(PANTALLA, ORIGEN, ESTILO_INTERFAZ, RECT_VENTANA_FIN, CENTRO_RECT_TITULO_VENTANA_FIN, "El bote ha sido botado", BOTONES, contador_enemigos_muertos, milisegundos, ARCHIVO_MUSICA_FIN, VOLUMEN_MUSICA, flags)
 
     pygame.display.flip()
 
